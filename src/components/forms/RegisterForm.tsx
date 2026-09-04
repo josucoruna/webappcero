@@ -57,6 +57,19 @@ export function RegisterForm() {
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
         />
       </div>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="code" className="text-sm font-medium text-zinc-700">
+          Código de acceso
+        </label>
+        <input
+          id="code"
+          name="code"
+          type="text"
+          required
+          placeholder="Te lo ha dado el admin de tu iglesia"
+          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+        />
+      </div>
       {state.error && (
         <p className="text-sm text-red-600" role="alert">
           {state.error}

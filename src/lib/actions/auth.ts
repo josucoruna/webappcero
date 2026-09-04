@@ -10,6 +10,7 @@ const registerSchema = z.object({
   name: z.string().trim().min(2, "El nombre debe tener al menos 2 letras"),
   email: z.string().trim().toLowerCase().email("Email no válido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  code: z.string().trim().min(1, "Indica el código de acceso"),
 });
 
 export type RegisterState = {
@@ -24,13 +25,18 @@ export async function registerUser(
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
+    code: formData.get("code"),
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Datos no válidos" };
   }
 
-  const { name, email, password } = parsed.data;
+  const { name, email, password, code } = parsed.data;
+
+  if (code !== process.env.REGISTRATION_CODE) {
+    return { error: "Código de acceso incorrecto" };
+  }
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {

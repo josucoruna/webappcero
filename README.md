@@ -27,8 +27,10 @@ legal), email y contraseña (cifrada). Nada más.
 
 ## Puesta en marcha
 
-1. Copia `.env.example` a `.env` y ajusta `DATABASE_URL` (y genera un
-   `AUTH_SECRET` con `openssl rand -base64 32`).
+1. Copia `.env.example` a `.env` y ajusta `DATABASE_URL`, genera un
+   `AUTH_SECRET` con `openssl rand -base64 32`, y elige un
+   `REGISTRATION_CODE` (el código que la gente tendrá que escribir para
+   poder crear una cuenta).
 2. Instala las dependencias:
 
    ```bash
