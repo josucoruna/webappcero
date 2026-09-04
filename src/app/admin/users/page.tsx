@@ -1,6 +1,6 @@
 import { requireSuperAdmin } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
-import { setSuperAdmin } from "@/lib/actions/users";
+import { deleteUser, setSuperAdmin } from "@/lib/actions/users";
 import { Header } from "@/components/Header";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 
@@ -42,27 +42,39 @@ export default async function AdminUsersPage() {
                 </p>
                 <p className="text-sm text-zinc-500">{person.email}</p>
               </div>
-              {person.isSuperAdmin ? (
-                person.id !== currentUser.id && (
-                  <form action={setSuperAdmin.bind(null, person.id, false)}>
+              <div className="flex items-center gap-2">
+                {person.isSuperAdmin ? (
+                  person.id !== currentUser.id && (
+                    <form action={setSuperAdmin.bind(null, person.id, false)}>
+                      <ConfirmSubmitButton
+                        confirmMessage={`¿Quitar el rol de admin principal a ${person.name}?`}
+                        className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
+                      >
+                        Quitar admin principal
+                      </ConfirmSubmitButton>
+                    </form>
+                  )
+                ) : (
+                  <form action={setSuperAdmin.bind(null, person.id, true)}>
                     <ConfirmSubmitButton
-                      confirmMessage={`¿Quitar el rol de admin principal a ${person.name}?`}
+                      confirmMessage={`¿Hacer a ${person.name} admin principal? Tendrá control total sobre toda la app.`}
                       className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
                     >
-                      Quitar admin principal
+                      Hacer admin principal
                     </ConfirmSubmitButton>
                   </form>
-                )
-              ) : (
-                <form action={setSuperAdmin.bind(null, person.id, true)}>
-                  <ConfirmSubmitButton
-                    confirmMessage={`¿Hacer a ${person.name} admin principal? Tendrá control total sobre toda la app.`}
-                    className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
-                  >
-                    Hacer admin principal
-                  </ConfirmSubmitButton>
-                </form>
-              )}
+                )}
+                {person.id !== currentUser.id && (
+                  <form action={deleteUser.bind(null, person.id)}>
+                    <ConfirmSubmitButton
+                      confirmMessage={`¿Eliminar a ${person.name} de la app? Perderá acceso y se le quitará de todos los equipos. Esto no se puede deshacer.`}
+                      className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      Eliminar
+                    </ConfirmSubmitButton>
+                  </form>
+                )}
+              </div>
             </li>
           ))}
         </ul>

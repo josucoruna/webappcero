@@ -19,3 +19,15 @@ export async function setSuperAdmin(userId: string, value: boolean) {
 
   revalidatePath("/admin/users");
 }
+
+export async function deleteUser(userId: string) {
+  const currentAdmin = await requireSuperAdmin();
+
+  if (currentAdmin.id === userId) {
+    throw new Error("No puedes eliminar tu propia cuenta");
+  }
+
+  await prisma.user.delete({ where: { id: userId } });
+
+  revalidatePath("/admin/users");
+}
