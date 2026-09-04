@@ -26,10 +26,10 @@ export function NewServiceForm({
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-4 rounded-lg border border-zinc-200 bg-white p-6"
+      className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-6"
     >
       <div className="flex flex-col gap-1">
-        <label htmlFor="teamId" className="text-sm font-medium text-zinc-700">
+        <label htmlFor="teamId" className="text-sm font-medium text-foreground">
           Equipo
         </label>
         <select
@@ -37,7 +37,7 @@ export function NewServiceForm({
           name="teamId"
           required
           defaultValue={teams.length === 1 ? teams[0].id : ""}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         >
           <option value="" disabled>
             Elige un equipo
@@ -50,7 +50,7 @@ export function NewServiceForm({
         </select>
       </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="title" className="text-sm font-medium text-zinc-700">
+        <label htmlFor="title" className="text-sm font-medium text-foreground">
           Título
         </label>
         <input
@@ -59,11 +59,11 @@ export function NewServiceForm({
           type="text"
           required
           placeholder="Ej. Culto del sábado"
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="date" className="text-sm font-medium text-zinc-700">
+        <label htmlFor="date" className="text-sm font-medium text-foreground">
           Fecha y hora
         </label>
         <input
@@ -72,18 +72,18 @@ export function NewServiceForm({
           type="datetime-local"
           required
           defaultValue={`${defaultDate}T18:00`}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="notes" className="text-sm font-medium text-zinc-700">
+        <label htmlFor="notes" className="text-sm font-medium text-foreground">
           Notas (opcional)
         </label>
         <input
           id="notes"
           name="notes"
           type="text"
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       {state.error && (
@@ -94,7 +94,7 @@ export function NewServiceForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60"
+        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60"
       >
         {pending ? "Creando…" : "Crear servicio"}
       </button>

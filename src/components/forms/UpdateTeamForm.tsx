@@ -27,7 +27,7 @@ export function UpdateTeamForm({
       className="flex flex-col gap-3 sm:flex-row sm:items-end"
     >
       <div className="flex flex-1 flex-col gap-1">
-        <label htmlFor="name" className="text-sm font-medium text-zinc-700">
+        <label htmlFor="name" className="text-sm font-medium text-foreground">
           Nombre del equipo
         </label>
         <input
@@ -36,13 +36,13 @@ export function UpdateTeamForm({
           type="text"
           required
           defaultValue={name}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       <div className="flex flex-1 flex-col gap-1">
         <label
           htmlFor="description"
-          className="text-sm font-medium text-zinc-700"
+          className="text-sm font-medium text-foreground"
         >
           Descripción
         </label>
@@ -51,13 +51,13 @@ export function UpdateTeamForm({
           name="description"
           type="text"
           defaultValue={description}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-100 disabled:opacity-60"
+        className="rounded-md border border-input px-4 py-2 text-sm font-medium text-foreground hover:bg-accent disabled:opacity-60"
       >
         {pending ? "Guardando…" : "Guardar cambios"}
       </button>

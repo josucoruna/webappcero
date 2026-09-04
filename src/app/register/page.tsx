@@ -10,18 +10,18 @@ export default async function RegisterPage() {
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
-      <div className="w-full max-w-sm rounded-lg border border-zinc-200 bg-white p-8">
-        <h1 className="text-xl font-semibold text-zinc-900">Crear cuenta</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+      <div className="w-full max-w-sm rounded-lg border border-line bg-surface p-8">
+        <h1 className="text-xl font-semibold text-foreground">Crear cuenta</h1>
+        <p className="mt-1 text-sm text-muted">
           Solo pedimos lo mínimo: un nombre (puede ser inventado), tu email y
           una contraseña.
         </p>
         <div className="mt-6">
           <RegisterForm />
         </div>
-        <p className="mt-6 text-sm text-zinc-500">
+        <p className="mt-6 text-sm text-muted">
           ¿Ya tienes cuenta?{" "}
-          <Link href="/login" className="font-medium text-zinc-900 underline">
+          <Link href="/login" className="font-medium text-foreground underline">
             Inicia sesión
           </Link>
         </p>

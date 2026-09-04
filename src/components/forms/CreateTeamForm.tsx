@@ -15,10 +15,10 @@ export function CreateTeamForm() {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-lg border border-zinc-200 bg-white p-4 sm:flex-row sm:items-end"
+      className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-4 sm:flex-row sm:items-end"
     >
       <div className="flex flex-1 flex-col gap-1">
-        <label htmlFor="name" className="text-sm font-medium text-zinc-700">
+        <label htmlFor="name" className="text-sm font-medium text-foreground">
           Nombre del equipo
         </label>
         <input
@@ -27,13 +27,13 @@ export function CreateTeamForm() {
           type="text"
           required
           placeholder="Ej. Alabanza"
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       <div className="flex flex-1 flex-col gap-1">
         <label
           htmlFor="description"
-          className="text-sm font-medium text-zinc-700"
+          className="text-sm font-medium text-foreground"
         >
           Descripción (opcional)
         </label>
@@ -42,13 +42,13 @@ export function CreateTeamForm() {
           name="description"
           type="text"
           placeholder="Ej. Música y cantantes del culto"
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60"
+        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60"
       >
         {pending ? "Creando…" : "Crear equipo"}
       </button>

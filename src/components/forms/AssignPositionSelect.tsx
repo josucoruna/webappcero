@@ -33,7 +33,7 @@ export function AssignPositionSelect({
         name="assignedUserId"
         defaultValue={assignedUserId ?? ""}
         onChange={() => formRef.current?.requestSubmit()}
-        className="rounded-md border border-zinc-300 px-2 py-1.5 text-sm outline-none focus:border-zinc-500"
+        className="rounded-md border border-input px-2 py-1.5 text-sm outline-none focus:border-foreground"
       >
         <option value="">Sin asignar</option>
         {members.map((member) => (

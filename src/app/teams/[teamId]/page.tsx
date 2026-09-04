@@ -43,7 +43,7 @@ export default async function TeamPage({
       <Header user={user} />
       <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
         {canManage ? (
-          <div className="rounded-lg border border-zinc-200 bg-white p-4">
+          <div className="rounded-lg border border-line bg-surface p-4">
             <UpdateTeamForm
               teamId={team.id}
               name={team.name}
@@ -52,17 +52,17 @@ export default async function TeamPage({
           </div>
         ) : (
           <div>
-            <h1 className="text-2xl font-semibold text-zinc-900">
+            <h1 className="text-2xl font-semibold text-foreground">
               {team.name}
             </h1>
             {team.description && (
-              <p className="mt-1 text-sm text-zinc-500">{team.description}</p>
+              <p className="mt-1 text-sm text-muted">{team.description}</p>
             )}
           </div>
         )}
 
         <section className="mt-10">
-          <h2 className="text-lg font-semibold text-zinc-900">Personas</h2>
+          <h2 className="text-lg font-semibold text-foreground">Personas</h2>
           {canManage && (
             <div className="mt-3">
               <AddMemberForm teamId={team.id} />
@@ -72,21 +72,21 @@ export default async function TeamPage({
             {team.memberships.map((membership) => (
               <li
                 key={membership.id}
-                className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3"
+                className="flex items-center justify-between rounded-lg border border-line bg-surface p-3"
               >
                 <div>
-                  <p className="font-medium text-zinc-900">
+                  <p className="font-medium text-foreground">
                     {membership.user.name}
                     {membership.role === "LEADER" && (
-                      <span className="ml-2 rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-800">
+                      <span className="ml-2 rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-500/15 dark:text-blue-300">
                         Líder
                       </span>
                     )}
                     {membership.userId === user.id && (
-                      <span className="ml-2 text-xs text-zinc-400">(tú)</span>
+                      <span className="ml-2 text-xs text-subtle">(tú)</span>
                     )}
                   </p>
-                  <p className="text-sm text-zinc-500">
+                  <p className="text-sm text-muted">
                     {membership.user.email}
                   </p>
                 </div>
@@ -102,7 +102,7 @@ export default async function TeamPage({
                     >
                       <button
                         type="submit"
-                        className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
+                        className="rounded-md border border-input px-3 py-1.5 text-sm text-foreground hover:bg-accent"
                       >
                         {membership.role === "LEADER"
                           ? "Quitar líder"
@@ -118,7 +118,7 @@ export default async function TeamPage({
                     >
                       <ConfirmSubmitButton
                         confirmMessage={`¿Quitar a ${membership.user.name} del equipo?`}
-                        className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+                        className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-900/50 dark:hover:bg-red-950"
                       >
                         Quitar
                       </ConfirmSubmitButton>
@@ -131,7 +131,7 @@ export default async function TeamPage({
         </section>
 
         <section className="mt-10">
-          <h2 className="text-lg font-semibold text-zinc-900">Servicios</h2>
+          <h2 className="text-lg font-semibold text-foreground">Servicios</h2>
           {canManage && (
             <div className="mt-3">
               <CreateServiceForm teamId={team.id} />
@@ -142,20 +142,20 @@ export default async function TeamPage({
               <li key={service.id}>
                 <Link
                   href={`/teams/${team.id}/services/${service.id}`}
-                  className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3 hover:border-zinc-400"
+                  className="flex items-center justify-between rounded-lg border border-line bg-surface p-3 hover:border-muted"
                 >
                   <div>
-                    <p className="font-medium text-zinc-900">
+                    <p className="font-medium text-foreground">
                       {service.title}
                     </p>
-                    <p className="text-sm text-zinc-500">
+                    <p className="text-sm text-muted">
                       {service.date.toLocaleString("es-ES", {
                         dateStyle: "full",
                         timeStyle: "short",
                       })}
                     </p>
                   </div>
-                  <span className="text-sm text-zinc-400">
+                  <span className="text-sm text-subtle">
                     {service._count.positions} puesto
                     {service._count.positions === 1 ? "" : "s"}
                   </span>
@@ -163,7 +163,7 @@ export default async function TeamPage({
               </li>
             ))}
             {team.services.length === 0 && (
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-muted">
                 Todavía no hay servicios programados en este equipo.
               </p>
             )}

@@ -32,7 +32,7 @@ export function RespondToAssignmentControls({
         <button
           type="button"
           onClick={() => setShowDeclineForm(true)}
-          className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+          className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-900/50 dark:hover:bg-red-950"
         >
           Rechazar
         </button>
@@ -49,7 +49,7 @@ export function RespondToAssignmentControls({
             required
             maxLength={MAX_DECLINE_REASON_LENGTH}
             placeholder="Motivo del rechazo (obligatorio)"
-            className="w-56 rounded-md border border-zinc-300 px-2 py-1.5 text-sm outline-none focus:border-zinc-500"
+            className="w-56 rounded-md border border-input px-2 py-1.5 text-sm outline-none focus:border-foreground"
           />
           <button
             type="submit"
@@ -60,7 +60,7 @@ export function RespondToAssignmentControls({
           <button
             type="button"
             onClick={() => setShowDeclineForm(false)}
-            className="text-sm text-zinc-500 hover:underline"
+            className="text-sm text-muted hover:underline"
           >
             Cancelar
           </button>

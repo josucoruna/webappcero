@@ -61,36 +61,36 @@ export default async function CalendarPage({
       <Header user={user} />
       <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-zinc-900 capitalize">
+          <h1 className="text-2xl font-semibold text-foreground capitalize">
             {monthLabel}
           </h1>
           <div className="flex gap-2">
             <Link
               href={`/calendar?y=${prev.year}&m=${prev.month}`}
-              className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
+              className="rounded-md border border-input px-3 py-1.5 text-sm text-foreground hover:bg-accent"
             >
               ← Anterior
             </Link>
             <Link
               href={`/calendar?y=${now.getFullYear()}&m=${now.getMonth() + 1}`}
-              className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
+              className="rounded-md border border-input px-3 py-1.5 text-sm text-foreground hover:bg-accent"
             >
               Hoy
             </Link>
             <Link
               href={`/calendar?y=${next.year}&m=${next.month}`}
-              className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
+              className="rounded-md border border-input px-3 py-1.5 text-sm text-foreground hover:bg-accent"
             >
               Siguiente →
             </Link>
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-7 gap-px overflow-hidden rounded-lg border border-zinc-200 bg-zinc-200 text-xs">
+        <div className="mt-6 grid grid-cols-7 gap-px overflow-hidden rounded-lg border border-line bg-line text-xs">
           {WEEKDAY_LABELS.map((label) => (
             <div
               key={label}
-              className="bg-zinc-50 px-2 py-1.5 text-center font-medium text-zinc-500"
+              className="bg-muted-surface px-2 py-1.5 text-center font-medium text-muted"
             >
               {label}
             </div>
@@ -105,14 +105,20 @@ export default async function CalendarPage({
             return (
               <div
                 key={key}
-                className={`min-h-[92px] bg-white p-1.5 ${
-                  !isCurrentMonth ? "bg-zinc-50" : isSaturday ? "bg-amber-50" : ""
+                className={`min-h-[92px] bg-surface p-1.5 ${
+                  !isCurrentMonth
+                    ? "bg-muted-surface"
+                    : isSaturday
+                      ? "bg-amber-50 dark:bg-amber-500/10"
+                      : ""
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span
                     className={
-                      isCurrentMonth ? "font-medium text-zinc-700" : "text-zinc-300"
+                      isCurrentMonth
+                        ? "font-medium text-foreground"
+                        : "text-zinc-300 dark:text-zinc-700"
                     }
                   >
                     {day.getDate()}
@@ -120,7 +126,7 @@ export default async function CalendarPage({
                   {isCurrentMonth && canCreate && (
                     <Link
                       href={`/calendar/new?date=${key}`}
-                      className="text-zinc-400 hover:text-zinc-900"
+                      className="text-subtle hover:text-foreground"
                       title="Añadir servicio"
                     >
                       +
@@ -132,7 +138,7 @@ export default async function CalendarPage({
                     <Link
                       key={service.id}
                       href={`/teams/${service.teamId}/services/${service.id}`}
-                      className="block truncate rounded bg-blue-100 px-1 py-0.5 text-blue-800 hover:bg-blue-200"
+                      className="block truncate rounded bg-blue-100 px-1 py-0.5 text-blue-800 hover:bg-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:hover:bg-blue-500/25"
                       title={`${service.title} · ${service.team.name}`}
                     >
                       {service.title}
@@ -145,7 +151,7 @@ export default async function CalendarPage({
         </div>
 
         {!canCreate && (
-          <p className="mt-4 text-sm text-zinc-500">
+          <p className="mt-4 text-sm text-muted">
             Aquí ves los servicios de tus equipos. Solo los líderes y el
             admin principal pueden añadir servicios nuevos.
           </p>
