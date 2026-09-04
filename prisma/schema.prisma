@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Una persona de la iglesia. isSuperAdmin da control total sobre toda la app.
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  isSuperAdmin Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  memberships       TeamMembership[]
+  assignedPositions Position[]
+
+  @@map("users")
+}
+
+// Un equipo de trabajo (Alabanza, Sonido, Niños, etc.)
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  memberships TeamMembership[]
+  services    Service[]
+
+  @@map("teams")
+}
+
+enum TeamRole {
+  LEADER
+  MEMBER
+}
+
+// Relación persona-equipo: define si es líder o miembro de ESE equipo.
+model TeamMembership {
+  id        String   @id @default(cuid())
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  role      TeamRole @default(MEMBER)
+  createdAt DateTime @default(now())
+
+  @@unique([teamId, userId])
+  @@map("team_memberships")
+}
+
+// Un servicio/evento de un equipo (ej: Culto del domingo) con puestos a cubrir.
+model Service {
+  id        String   @id @default(cuid())
+  title     String
+  date      DateTime
+  notes     String?
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    String
+  createdAt DateTime @default(now())
+
+  positions Position[]
+
+  @@map("services")
+}
+
+enum AssignmentStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
+}
+
+// Un puesto dentro de un servicio (ej: "Guitarra", "Proyección") asignado a alguien.
+model Position {
+  id             String           @id @default(cuid())
+  name           String
+  service        Service          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId      String
+  assignedUser   User?            @relation(fields: [assignedUserId], references: [id], onDelete: SetNull)
+  assignedUserId String?
+  status         AssignmentStatus @default(PENDING)
+  createdAt      DateTime         @default(now())
+
+  @@map("positions")
+}

@@ -1,0 +1,205 @@
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+
+import { canManageTeam, requireUser } from "@/lib/authz";
+import { prisma } from "@/lib/prisma";
+import {
+  deletePosition,
+  deleteService,
+  respondToAssignment,
+} from "@/lib/actions/services";
+import { Header } from "@/components/Header";
+import { AddPositionForm } from "@/components/forms/AddPositionForm";
+import { AssignPositionSelect } from "@/components/forms/AssignPositionSelect";
+import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
+
+const statusLabels: Record<string, string> = {
+  PENDING: "Pendiente de confirmar",
+  CONFIRMED: "Confirmado",
+  DECLINED: "Rechazado",
+};
+
+const statusStyles: Record<string, string> = {
+  PENDING: "bg-zinc-100 text-zinc-600",
+  CONFIRMED: "bg-green-100 text-green-800",
+  DECLINED: "bg-red-100 text-red-700",
+};
+
+export default async function ServicePage({
+  params,
+}: {
+  params: Promise<{ teamId: string; serviceId: string }>;
+}) {
+  const { teamId, serviceId } = await params;
+  const user = await requireUser();
+
+  const service = await prisma.service.findUnique({
+    where: { id: serviceId },
+    include: {
+      team: {
+        include: { memberships: { include: { user: true } } },
+      },
+      positions: {
+        orderBy: { createdAt: "asc" },
+        include: { assignedUser: true },
+      },
+    },
+  });
+  if (!service || service.teamId !== teamId) notFound();
+
+  const isMember = service.team.memberships.some((m) => m.userId === user.id);
+  if (!isMember && !user.isSuperAdmin) redirect("/dashboard");
+
+  const canManage = await canManageTeam(user, teamId);
+  const members = service.team.memberships.map((m) => ({
+    userId: m.userId,
+    name: m.user.name,
+  }));
+
+  return (
+    <>
+      <Header user={user} />
+      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
+        <Link
+          href={`/teams/${teamId}`}
+          className="text-sm text-zinc-500 hover:underline"
+        >
+          ← {service.team.name}
+        </Link>
+        <div className="mt-2 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-zinc-900">
+              {service.title}
+            </h1>
+            <p className="mt-1 text-sm text-zinc-500">
+              {service.date.toLocaleString("es-ES", {
+                dateStyle: "full",
+                timeStyle: "short",
+              })}
+            </p>
+            {service.notes && (
+              <p className="mt-2 text-sm text-zinc-600">{service.notes}</p>
+            )}
+          </div>
+          {canManage && (
+            <form action={deleteService.bind(null, teamId, serviceId)}>
+              <ConfirmSubmitButton
+                confirmMessage={`¿Eliminar el servicio "${service.title}"?`}
+                className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+              >
+                Eliminar servicio
+              </ConfirmSubmitButton>
+            </form>
+          )}
+        </div>
+
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold text-zinc-900">Puestos</h2>
+          {canManage && (
+            <div className="mt-3">
+              <AddPositionForm
+                teamId={teamId}
+                serviceId={serviceId}
+                members={members}
+              />
+            </div>
+          )}
+
+          <ul className="mt-4 flex flex-col gap-2">
+            {service.positions.map((position) => {
+              const isAssignedToMe = position.assignedUserId === user.id;
+              return (
+                <li
+                  key={position.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-zinc-200 bg-white p-3"
+                >
+                  <div>
+                    <p className="font-medium text-zinc-900">
+                      {position.name}
+                    </p>
+                    <span
+                      className={`mt-1 inline-block rounded px-1.5 py-0.5 text-xs font-medium ${statusStyles[position.status]}`}
+                    >
+                      {statusLabels[position.status]}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {canManage ? (
+                      <>
+                        <AssignPositionSelect
+                          teamId={teamId}
+                          serviceId={serviceId}
+                          positionId={position.id}
+                          assignedUserId={position.assignedUserId}
+                          members={members}
+                        />
+                        <form
+                          action={deletePosition.bind(
+                            null,
+                            teamId,
+                            serviceId,
+                            position.id,
+                          )}
+                        >
+                          <ConfirmSubmitButton
+                            confirmMessage={`¿Eliminar el puesto "${position.name}"?`}
+                            className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+                          >
+                            Eliminar
+                          </ConfirmSubmitButton>
+                        </form>
+                      </>
+                    ) : (
+                      <p className="text-sm text-zinc-500">
+                        {position.assignedUser?.name ?? "Sin asignar"}
+                      </p>
+                    )}
+
+                    {isAssignedToMe && position.status !== "CONFIRMED" && (
+                      <form
+                        action={respondToAssignment.bind(
+                          null,
+                          position.id,
+                          "CONFIRMED",
+                        )}
+                      >
+                        <button
+                          type="submit"
+                          className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700"
+                        >
+                          Confirmar
+                        </button>
+                      </form>
+                    )}
+                    {isAssignedToMe && position.status !== "DECLINED" && (
+                      <form
+                        action={respondToAssignment.bind(
+                          null,
+                          position.id,
+                          "DECLINED",
+                        )}
+                      >
+                        <button
+                          type="submit"
+                          className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+                        >
+                          Rechazar
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+            {service.positions.length === 0 && (
+              <p className="text-sm text-zinc-500">
+                Todavía no hay puestos para este servicio.
+              </p>
+            )}
+          </ul>
+        </section>
+      </main>
+    </>
+  );
+}
