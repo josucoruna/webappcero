@@ -168,11 +168,7 @@ export async function assignPosition(
   revalidatePath(`/teams/${teamId}/services/${serviceId}`);
 }
 
-/** El propio miembro confirma o rechaza su asignación. */
-export async function respondToAssignment(
-  positionId: string,
-  status: "CONFIRMED" | "DECLINED",
-) {
+async function getOwnAssignedPosition(positionId: string) {
   const user = await requireUser();
 
   const position = await prisma.position.findUnique({
@@ -182,10 +178,44 @@ export async function respondToAssignment(
   if (!position || position.assignedUserId !== user.id) {
     throw new Error("No tienes permiso para responder a esta asignación");
   }
+  return position;
+}
+
+/** El propio miembro confirma su asignación. */
+export async function confirmAssignment(positionId: string) {
+  const position = await getOwnAssignedPosition(positionId);
 
   await prisma.position.update({
     where: { id: positionId },
-    data: { status },
+    data: { status: "CONFIRMED", declineReason: null },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/teams/${position.service.teamId}`);
+}
+
+const MAX_DECLINE_REASON_LENGTH = 150;
+
+/** El propio miembro rechaza su asignación, indicando un motivo. */
+export async function declineAssignment(
+  positionId: string,
+  formData: FormData,
+) {
+  const position = await getOwnAssignedPosition(positionId);
+
+  const declineReason = String(formData.get("declineReason") ?? "").trim();
+  if (!declineReason) {
+    throw new Error("Indica un motivo para rechazar la asignación");
+  }
+  if (declineReason.length > MAX_DECLINE_REASON_LENGTH) {
+    throw new Error(
+      `El motivo no puede superar los ${MAX_DECLINE_REASON_LENGTH} caracteres`,
+    );
+  }
+
+  await prisma.position.update({
+    where: { id: positionId },
+    data: { status: "DECLINED", declineReason },
   });
 
   revalidatePath("/dashboard");

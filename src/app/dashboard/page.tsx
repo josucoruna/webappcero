@@ -2,8 +2,8 @@ import Link from "next/link";
 
 import { requireUser } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
-import { respondToAssignment } from "@/lib/actions/services";
 import { Header } from "@/components/Header";
+import { RespondToAssignmentControls } from "@/components/forms/RespondToAssignmentControls";
 
 const statusStyles: Record<string, string> = {
   PENDING: "bg-zinc-100 text-zinc-600",
@@ -77,41 +77,16 @@ export default async function DashboardPage() {
                   >
                     {statusLabels[position.status]}
                   </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {position.status !== "CONFIRMED" && (
-                    <form
-                      action={respondToAssignment.bind(
-                        null,
-                        position.id,
-                        "CONFIRMED",
-                      )}
-                    >
-                      <button
-                        type="submit"
-                        className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700"
-                      >
-                        Confirmar
-                      </button>
-                    </form>
-                  )}
-                  {position.status !== "DECLINED" && (
-                    <form
-                      action={respondToAssignment.bind(
-                        null,
-                        position.id,
-                        "DECLINED",
-                      )}
-                    >
-                      <button
-                        type="submit"
-                        className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
-                      >
-                        Rechazar
-                      </button>
-                    </form>
+                  {position.status === "DECLINED" && position.declineReason && (
+                    <p className="mt-1 text-xs italic text-zinc-500">
+                      Motivo: {position.declineReason}
+                    </p>
                   )}
                 </div>
+                <RespondToAssignmentControls
+                  positionId={position.id}
+                  status={position.status}
+                />
               </li>
             ))}
             {myUpcomingPositions.length === 0 && (

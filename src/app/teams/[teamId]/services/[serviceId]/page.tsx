@@ -3,15 +3,12 @@ import { notFound, redirect } from "next/navigation";
 
 import { canManageTeam, requireUser } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
-import {
-  deletePosition,
-  deleteService,
-  respondToAssignment,
-} from "@/lib/actions/services";
+import { deletePosition, deleteService } from "@/lib/actions/services";
 import { Header } from "@/components/Header";
 import { AddPositionForm } from "@/components/forms/AddPositionForm";
 import { AssignPositionSelect } from "@/components/forms/AssignPositionSelect";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
+import { RespondToAssignmentControls } from "@/components/forms/RespondToAssignmentControls";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Pendiente de confirmar",
@@ -122,6 +119,12 @@ export default async function ServicePage({
                     >
                       {statusLabels[position.status]}
                     </span>
+                    {position.status === "DECLINED" &&
+                      position.declineReason && (
+                        <p className="mt-1 text-xs italic text-zinc-500">
+                          Motivo: {position.declineReason}
+                        </p>
+                      )}
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -156,37 +159,11 @@ export default async function ServicePage({
                       </p>
                     )}
 
-                    {isAssignedToMe && position.status !== "CONFIRMED" && (
-                      <form
-                        action={respondToAssignment.bind(
-                          null,
-                          position.id,
-                          "CONFIRMED",
-                        )}
-                      >
-                        <button
-                          type="submit"
-                          className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700"
-                        >
-                          Confirmar
-                        </button>
-                      </form>
-                    )}
-                    {isAssignedToMe && position.status !== "DECLINED" && (
-                      <form
-                        action={respondToAssignment.bind(
-                          null,
-                          position.id,
-                          "DECLINED",
-                        )}
-                      >
-                        <button
-                          type="submit"
-                          className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
-                        >
-                          Rechazar
-                        </button>
-                      </form>
+                    {isAssignedToMe && (
+                      <RespondToAssignmentControls
+                        positionId={position.id}
+                        status={position.status}
+                      />
                     )}
                   </div>
                 </li>
