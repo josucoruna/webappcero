@@ -2,14 +2,18 @@ import Link from "next/link";
 
 import type { CurrentUser } from "@/lib/authz";
 import { logout } from "@/lib/actions/auth";
+import { Logo } from "@/components/Logo";
 
 export function Header({ user }: { user: CurrentUser }) {
   return (
     <header className="border-b border-line bg-surface">
       <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
         <nav className="flex items-center gap-5 text-sm font-medium text-muted">
-          <Link href="/dashboard" className="text-foreground font-semibold">
-            Equipos de Iglesia
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <Logo className="h-7 w-auto" />
+            <span className="font-semibold text-foreground">
+              Equipos de Iglesia
+            </span>
           </Link>
           <Link href="/calendar" className="hover:text-foreground">
             Calendario

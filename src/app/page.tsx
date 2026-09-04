@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/authz";
+import { Logo } from "@/components/Logo";
 
 export default async function Home() {
   const user = await getCurrentUser();
@@ -9,7 +10,8 @@ export default async function Home() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-24 text-center">
-      <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
+      <Logo className="h-24 w-auto sm:h-28" />
+      <h1 className="mt-6 text-3xl font-bold text-foreground sm:text-4xl">
         Equipos de Iglesia
       </h1>
       <p className="mt-4 max-w-md text-muted">
