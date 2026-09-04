@@ -11,6 +11,9 @@ export function Header({ user }: { user: CurrentUser }) {
           <Link href="/dashboard" className="text-zinc-900 font-semibold">
             Equipos de Iglesia
           </Link>
+          <Link href="/calendar" className="hover:text-zinc-900">
+            Calendario
+          </Link>
           {user.isSuperAdmin && (
             <>
               <Link href="/admin/teams" className="hover:text-zinc-900">

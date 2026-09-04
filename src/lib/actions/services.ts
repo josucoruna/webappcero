@@ -1,10 +1,11 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
-import { requireTeamManager, requireUser } from "@/lib/authz";
+import { canManageTeam, requireTeamManager, requireUser } from "@/lib/authz";
 
 export type ActionState = { error?: string };
 
@@ -46,6 +47,46 @@ export async function createService(
 
   revalidatePath(`/teams/${teamId}`);
   return {};
+}
+
+/** Crear un servicio desde el calendario, eligiendo el equipo en el propio formulario. */
+export async function createServiceFromCalendar(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const teamId = String(formData.get("teamId") ?? "");
+  if (!teamId) return { error: "Elige un equipo" };
+
+  const user = await requireUser();
+  const allowed = await canManageTeam(user, teamId);
+  if (!allowed) return { error: "No puedes crear servicios en ese equipo" };
+
+  const parsed = serviceSchema.safeParse({
+    title: formData.get("title"),
+    date: formData.get("date"),
+    notes: formData.get("notes"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Datos no válidos" };
+  }
+
+  const date = new Date(parsed.data.date);
+  if (Number.isNaN(date.getTime())) {
+    return { error: "La fecha no es válida" };
+  }
+
+  const service = await prisma.service.create({
+    data: {
+      title: parsed.data.title,
+      date,
+      notes: parsed.data.notes || null,
+      teamId,
+    },
+  });
+
+  revalidatePath("/calendar");
+  revalidatePath(`/teams/${teamId}`);
+  redirect(`/teams/${teamId}/services/${service.id}`);
 }
 
 export async function deleteService(teamId: string, serviceId: string) {
