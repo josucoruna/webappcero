@@ -86,11 +86,11 @@ export default async function CalendarPage({
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-7 gap-px overflow-hidden rounded-lg border border-line bg-line text-xs">
+        <div className="mt-6 grid grid-cols-7 gap-2 text-xs">
           {WEEKDAY_LABELS.map((label) => (
             <div
               key={label}
-              className="bg-muted-surface px-2 py-1.5 text-center font-medium text-muted"
+              className="px-2 py-1 text-center font-medium text-muted"
             >
               {label}
             </div>
@@ -101,44 +101,42 @@ export default async function CalendarPage({
             const isCurrentMonth = day.getMonth() === month - 1;
             const isSaturday = day.getDay() === 6;
             const dayServices = servicesByDay.get(key) ?? [];
+            const canCreateHere = isCurrentMonth && canCreate;
 
             return (
               <div
                 key={key}
-                className={`min-h-[92px] bg-surface p-1.5 ${
+                className={`group relative min-h-[92px] rounded-xl border border-line p-1.5 transition ${
                   !isCurrentMonth
                     ? "bg-muted-surface"
                     : isSaturday
                       ? "bg-amber-50 dark:bg-amber-500/10"
-                      : ""
-                }`}
+                      : "bg-surface"
+                } ${canCreateHere ? "hover:border-muted" : ""}`}
               >
-                <div className="flex items-center justify-between">
-                  <span
-                    className={
-                      isCurrentMonth
-                        ? "font-medium text-foreground"
-                        : "text-zinc-300 dark:text-zinc-700"
-                    }
-                  >
-                    {day.getDate()}
-                  </span>
-                  {isCurrentMonth && canCreate && (
-                    <Link
-                      href={`/calendar/new?date=${key}`}
-                      className="text-subtle hover:text-foreground"
-                      title="Añadir servicio"
-                    >
-                      +
-                    </Link>
-                  )}
-                </div>
-                <div className="mt-1 flex flex-col gap-1">
+                {canCreateHere && (
+                  <Link
+                    href={`/calendar/new?date=${key}`}
+                    className="absolute inset-0 rounded-xl"
+                    title="Añadir servicio"
+                    aria-label={`Añadir servicio el ${key}`}
+                  />
+                )}
+                <span
+                  className={
+                    isCurrentMonth
+                      ? "font-medium text-foreground"
+                      : "text-zinc-300 dark:text-zinc-700"
+                  }
+                >
+                  {day.getDate()}
+                </span>
+                <div className="relative mt-1 flex flex-col gap-1">
                   {dayServices.map((service) => (
                     <Link
                       key={service.id}
                       href={`/teams/${service.teamId}/services/${service.id}`}
-                      className="block truncate rounded bg-blue-100 px-1 py-0.5 text-blue-800 hover:bg-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:hover:bg-blue-500/25"
+                      className="relative z-10 block truncate rounded-lg bg-blue-100 px-1.5 py-0.5 text-blue-800 hover:bg-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:hover:bg-blue-500/25"
                       title={`${service.title} · ${service.team.name}`}
                     >
                       {service.title}
