@@ -11,7 +11,12 @@ export default async function Home() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-24 text-center">
-      <LogoNetwork className="h-24 w-24 sm:h-28 sm:w-28" />
+      <div className="flex items-center gap-4">
+        <LogoNetwork className="h-16 w-16 sm:h-20 sm:w-20" />
+        <span className="text-3xl font-bold text-foreground sm:text-4xl">
+          LuaOne
+        </span>
+      </div>
       <h1 className="mt-6 text-3xl font-bold text-foreground sm:text-4xl">
         Equipos de trabajo
       </h1>
