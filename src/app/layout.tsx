@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Equipos de Iglesia",
+  title: "Equipos de trabajo",
   description: "Gestión de equipos de trabajo, servicios y asignaciones",
 };
 

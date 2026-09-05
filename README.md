@@ -1,4 +1,4 @@
-# Equipos de Iglesia
+# Equipos de trabajo
 
 Webapp para gestionar los equipos de trabajo de una iglesia: crear
 equipos, añadir personas, planificar servicios/eventos y asignar quién
