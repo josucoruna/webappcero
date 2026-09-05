@@ -15,10 +15,6 @@ export default async function Home() {
       <h1 className="mt-6 text-3xl font-bold text-foreground sm:text-4xl">
         Equipos de trabajo
       </h1>
-      <p className="mt-4 max-w-md text-muted">
-        Organiza los equipos de trabajo de tu iglesia, planifica los
-        servicios y gestiona quién sirve en cada puesto.
-      </p>
       <div className="mt-8 flex gap-4">
         <Link href="/login" className={buttonClassName({ variant: "primary", size: "lg" })}>
           Iniciar sesión
