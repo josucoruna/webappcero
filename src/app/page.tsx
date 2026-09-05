@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/authz";
-import { Logo } from "@/components/Logo";
+import { LogoNetwork } from "@/components/LogoNetwork";
 import { buttonClassName } from "@/components/ui/Button";
 
 export default async function Home() {
@@ -11,7 +11,7 @@ export default async function Home() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-24 text-center">
-      <Logo className="h-24 w-auto sm:h-28" />
+      <LogoNetwork className="h-24 w-24 sm:h-28 sm:w-28" />
       <h1 className="mt-6 text-3xl font-bold text-foreground sm:text-4xl">
         Equipos de trabajo
       </h1>
