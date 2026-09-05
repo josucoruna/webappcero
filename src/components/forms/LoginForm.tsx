@@ -3,6 +3,8 @@
 import { useActionState } from "react";
 
 import { authenticate, type LoginState } from "@/lib/actions/login";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const initialState: LoginState = {};
 
@@ -18,14 +20,7 @@ export function LoginForm() {
         <label htmlFor="email" className="text-sm font-medium text-foreground">
           Email
         </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
-        />
+        <Input id="email" name="email" type="email" required autoComplete="email" />
       </div>
       <div className="flex flex-col gap-1">
         <label
@@ -34,27 +29,22 @@ export function LoginForm() {
         >
           Contraseña
         </label>
-        <input
+        <Input
           id="password"
           name="password"
           type="password"
           required
           autoComplete="current-password"
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       {state.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {state.error}
         </p>
       )}
-      <button
-        type="submit"
-        disabled={pending}
-        className="mt-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60"
-      >
+      <Button type="submit" variant="primary" disabled={pending} className="mt-2">
         {pending ? "Entrando…" : "Entrar"}
-      </button>
+      </Button>
     </form>
   );
 }

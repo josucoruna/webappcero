@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/authz";
 import { RegisterForm } from "@/components/forms/RegisterForm";
+import { Card } from "@/components/ui/Card";
 
 export default async function RegisterPage() {
   const user = await getCurrentUser();
@@ -10,7 +11,7 @@ export default async function RegisterPage() {
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
-      <div className="w-full max-w-sm rounded-lg border border-line bg-surface p-8">
+      <Card padding="p-8" className="w-full max-w-sm">
         <h1 className="text-xl font-semibold text-foreground">Crear cuenta</h1>
         <p className="mt-1 text-sm text-muted">
           Solo pedimos lo mínimo: un nombre (puede ser inventado), tu email y
@@ -25,7 +26,7 @@ export default async function RegisterPage() {
             Inicia sesión
           </Link>
         </p>
-      </div>
+      </Card>
     </main>
   );
 }

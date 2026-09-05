@@ -3,6 +3,8 @@
 import { useActionState } from "react";
 
 import { registerUser, type RegisterState } from "@/lib/actions/auth";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const initialState: RegisterState = {};
 
@@ -18,27 +20,19 @@ export function RegisterForm() {
         <label htmlFor="name" className="text-sm font-medium text-foreground">
           Tu nombre
         </label>
-        <input
+        <Input
           id="name"
           name="name"
           type="text"
           required
           placeholder="Puede ser un apodo, no hace falta que sea tu nombre legal"
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="email" className="text-sm font-medium text-foreground">
           Email
         </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
-        />
+        <Input id="email" name="email" type="email" required autoComplete="email" />
       </div>
       <div className="flex flex-col gap-1">
         <label
@@ -47,41 +41,35 @@ export function RegisterForm() {
         >
           Contraseña
         </label>
-        <input
+        <Input
           id="password"
           name="password"
           type="password"
           required
           minLength={6}
           autoComplete="new-password"
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="code" className="text-sm font-medium text-foreground">
           Código de acceso
         </label>
-        <input
+        <Input
           id="code"
           name="code"
           type="text"
           required
           placeholder="Te lo ha dado el admin de tu iglesia"
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
       {state.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {state.error}
         </p>
       )}
-      <button
-        type="submit"
-        disabled={pending}
-        className="mt-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60"
-      >
+      <Button type="submit" variant="primary" disabled={pending} className="mt-2">
         {pending ? "Creando cuenta…" : "Crear cuenta"}
-      </button>
+      </Button>
     </form>
   );
 }

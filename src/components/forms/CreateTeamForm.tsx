@@ -3,6 +3,9 @@
 import { useActionState } from "react";
 
 import { createTeam, type ActionState } from "@/lib/actions/teams";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { cardClassName } from "@/components/ui/Card";
 
 const initialState: ActionState = {};
 
@@ -15,20 +18,15 @@ export function CreateTeamForm() {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-4 sm:flex-row sm:items-end"
+      className={cardClassName({
+        className: "flex flex-col gap-3 sm:flex-row sm:items-end",
+      })}
     >
       <div className="flex flex-1 flex-col gap-1">
         <label htmlFor="name" className="text-sm font-medium text-foreground">
           Nombre del equipo
         </label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          placeholder="Ej. Alabanza"
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
-        />
+        <Input id="name" name="name" type="text" required placeholder="Ej. Alabanza" />
       </div>
       <div className="flex flex-1 flex-col gap-1">
         <label
@@ -37,23 +35,21 @@ export function CreateTeamForm() {
         >
           Descripción (opcional)
         </label>
-        <input
+        <Input
           id="description"
           name="description"
           type="text"
           placeholder="Ej. Música y cantantes del culto"
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60"
-      >
+      <Button type="submit" variant="primary" disabled={pending}>
         {pending ? "Creando…" : "Crear equipo"}
-      </button>
+      </Button>
       {state.error && (
-        <p className="text-sm text-red-600 sm:basis-full" role="alert">
+        <p
+          className="text-sm text-red-600 dark:text-red-400 sm:basis-full"
+          role="alert"
+        >
           {state.error}
         </p>
       )}

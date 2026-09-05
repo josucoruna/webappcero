@@ -3,6 +3,8 @@
 import { useState } from "react";
 
 import { confirmAssignment, declineAssignment } from "@/lib/actions/services";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const MAX_DECLINE_REASON_LENGTH = 150;
 
@@ -19,51 +21,48 @@ export function RespondToAssignmentControls({
     <div className="flex flex-wrap items-center gap-2">
       {status !== "CONFIRMED" && (
         <form action={confirmAssignment.bind(null, positionId)}>
-          <button
-            type="submit"
-            className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700"
-          >
+          <Button type="submit" variant="success-solid" size="lg">
             Confirmar
-          </button>
+          </Button>
         </form>
       )}
 
       {status !== "DECLINED" && !showDeclineForm && (
-        <button
+        <Button
           type="button"
+          variant="danger"
+          size="lg"
           onClick={() => setShowDeclineForm(true)}
-          className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-900/50 dark:hover:bg-red-950"
         >
           Rechazar
-        </button>
+        </Button>
       )}
 
       {status !== "DECLINED" && showDeclineForm && (
         <form
           action={declineAssignment.bind(null, positionId)}
-          className="flex items-center gap-2"
+          className="flex flex-wrap items-center gap-2"
         >
-          <input
+          <Input
             type="text"
             name="declineReason"
             required
             maxLength={MAX_DECLINE_REASON_LENGTH}
             placeholder="Motivo del rechazo (obligatorio)"
-            className="w-56 rounded-md border border-input px-2 py-1.5 text-sm outline-none focus:border-foreground"
+            uiSize="lg"
+            className="w-56"
           />
-          <button
-            type="submit"
-            className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700"
-          >
+          <Button type="submit" variant="danger-solid" size="lg">
             Rechazar
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
+            size="lg"
             onClick={() => setShowDeclineForm(false)}
-            className="text-sm text-muted hover:underline"
           >
             Cancelar
-          </button>
+          </Button>
         </form>
       )}
     </div>

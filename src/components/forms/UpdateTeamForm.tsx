@@ -3,6 +3,8 @@
 import { useActionState } from "react";
 
 import { updateTeamDetails, type ActionState } from "@/lib/actions/teams";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const initialState: ActionState = {};
 
@@ -30,14 +32,7 @@ export function UpdateTeamForm({
         <label htmlFor="name" className="text-sm font-medium text-foreground">
           Nombre del equipo
         </label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          defaultValue={name}
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
-        />
+        <Input id="name" name="name" type="text" required defaultValue={name} />
       </div>
       <div className="flex flex-1 flex-col gap-1">
         <label
@@ -46,23 +41,21 @@ export function UpdateTeamForm({
         >
           Descripción
         </label>
-        <input
+        <Input
           id="description"
           name="description"
           type="text"
           defaultValue={description}
-          className="rounded-md border border-input px-3 py-2 text-sm outline-none focus:border-foreground"
         />
       </div>
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md border border-input px-4 py-2 text-sm font-medium text-foreground hover:bg-accent disabled:opacity-60"
-      >
+      <Button type="submit" variant="secondary" disabled={pending}>
         {pending ? "Guardando…" : "Guardar cambios"}
-      </button>
+      </Button>
       {state.error && (
-        <p className="text-sm text-red-600 sm:basis-full" role="alert">
+        <p
+          className="text-sm text-red-600 dark:text-red-400 sm:basis-full"
+          role="alert"
+        >
           {state.error}
         </p>
       )}

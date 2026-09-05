@@ -3,12 +3,14 @@ import Link from "next/link";
 import type { CurrentUser } from "@/lib/authz";
 import { logout } from "@/lib/actions/auth";
 import { Logo } from "@/components/Logo";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 
 export function Header({ user }: { user: CurrentUser }) {
   return (
     <header className="border-b border-line bg-surface">
-      <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-        <nav className="flex items-center gap-5 text-sm font-medium text-muted">
+      <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-4">
+        <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium text-muted">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Logo className="h-7 w-auto" />
             <span className="font-semibold text-foreground">
@@ -33,18 +35,15 @@ export function Header({ user }: { user: CurrentUser }) {
           <span className="text-muted">
             {user.name}
             {user.isSuperAdmin && (
-              <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
+              <Badge variant="warning" className="ml-2">
                 Admin principal
-              </span>
+              </Badge>
             )}
           </span>
           <form action={logout}>
-            <button
-              type="submit"
-              className="rounded-md border border-input px-3 py-1.5 text-foreground hover:bg-accent"
-            >
+            <Button type="submit" variant="secondary" size="sm">
               Cerrar sesión
-            </button>
+            </Button>
           </form>
         </div>
       </div>

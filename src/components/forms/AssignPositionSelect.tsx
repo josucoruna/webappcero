@@ -3,6 +3,7 @@
 import { useRef } from "react";
 
 import { assignPosition } from "@/lib/actions/services";
+import { inputClassName } from "@/components/ui/Input";
 
 type Member = { userId: string; name: string };
 
@@ -33,7 +34,7 @@ export function AssignPositionSelect({
         name="assignedUserId"
         defaultValue={assignedUserId ?? ""}
         onChange={() => formRef.current?.requestSubmit()}
-        className="rounded-md border border-input px-2 py-1.5 text-sm outline-none focus:border-foreground"
+        className={inputClassName({ size: "sm" })}
       >
         <option value="">Sin asignar</option>
         {members.map((member) => (

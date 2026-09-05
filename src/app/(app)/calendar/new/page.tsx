@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import { dateKey } from "@/lib/calendar";
-import { Header } from "@/components/Header";
 import { NewServiceForm } from "@/components/forms/NewServiceForm";
 
 export default async function NewServiceFromCalendarPage({
@@ -27,19 +26,16 @@ export default async function NewServiceFromCalendarPage({
   const defaultDate = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : dateKey(new Date());
 
   return (
-    <>
-      <Header user={user} />
-      <main className="mx-auto w-full max-w-md flex-1 px-6 py-10">
-        <Link href="/calendar" className="text-sm text-muted hover:underline">
-          ← Calendario
-        </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-foreground">
-          Nuevo servicio
-        </h1>
-        <div className="mt-6">
-          <NewServiceForm teams={manageableTeams} defaultDate={defaultDate} />
-        </div>
-      </main>
-    </>
+    <div className="mx-auto max-w-md">
+      <Link href="/calendar" className="text-sm text-muted hover:underline">
+        ← Calendario
+      </Link>
+      <h1 className="mt-2 text-2xl font-semibold text-foreground">
+        Nuevo servicio
+      </h1>
+      <div className="mt-6">
+        <NewServiceForm teams={manageableTeams} defaultDate={defaultDate} />
+      </div>
+    </div>
   );
 }

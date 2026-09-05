@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/authz";
 import { LoginForm } from "@/components/forms/LoginForm";
+import { Card } from "@/components/ui/Card";
 
 export default async function LoginPage() {
   const user = await getCurrentUser();
@@ -10,7 +11,7 @@ export default async function LoginPage() {
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
-      <div className="w-full max-w-sm rounded-lg border border-line bg-surface p-8">
+      <Card padding="p-8" className="w-full max-w-sm">
         <h1 className="text-xl font-semibold text-foreground">
           Iniciar sesión
         </h1>
@@ -26,7 +27,7 @@ export default async function LoginPage() {
             Crea una aquí
           </Link>
         </p>
-      </div>
+      </Card>
     </main>
   );
 }
