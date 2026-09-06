@@ -13,20 +13,20 @@ export default async function Home() {
   // tokens, en modo oscuro el texto se volvería casi blanco y desaparecería
   // sobre este fondo blanco.
   const headerButtonBase =
-    "inline-flex items-center justify-center whitespace-nowrap rounded-md h-8 px-2 text-xs font-medium transition sm:px-3 sm:text-sm";
+    "inline-flex items-center justify-center whitespace-nowrap rounded-md h-6 px-1.5 text-[10px] font-medium transition sm:h-8 sm:px-3 sm:text-sm";
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="flex flex-wrap items-center justify-between gap-x-2 gap-y-3 bg-white py-4 pl-3 pr-16 sm:gap-x-3 sm:pl-10 sm:pr-24">
+      <header className="flex items-center justify-between gap-1 bg-white py-4 pl-2 pr-16 sm:gap-3 sm:pl-10 sm:pr-24">
         <Image
           src="/LuaOne-logo-claro.svg"
           alt="LuaOne"
           width={400}
           height={160}
           priority
-          className="h-[72px] w-auto shrink-0 sm:h-32"
+          className="h-16 w-auto shrink-0 sm:h-32"
         />
-        <div className="flex shrink-0 gap-1.5 sm:gap-3">
+        <div className="flex shrink-0 gap-1 sm:gap-3">
           <Link
             href="/login"
             className={`${headerButtonBase} border border-zinc-300 text-zinc-900 hover:bg-zinc-100`}
