@@ -77,35 +77,55 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Escritorio: las dos fotos casi pegadas a los lados, con el titular hacia la parte baja. */}
-        <div className="relative hidden flex-1 lg:flex lg:flex-col lg:items-center lg:justify-end lg:px-6 lg:pb-24">
-          <div className="absolute inset-y-0 left-0 w-[49%]">
+        {/* Escritorio: cuatro fotos ocupando todo el ancho, con el titular hacia la parte baja. */}
+        <div className="relative hidden flex-1 overflow-hidden lg:block">
+          <div className="absolute inset-y-0 left-0 w-1/4">
             <Image
               src="/zane-persaud-Mz7yqJGB6Ls-unsplash.jpg"
               alt=""
               fill
-              sizes="49vw"
+              sizes="25vw"
               className="object-cover"
               priority
             />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-r from-transparent to-page" />
           </div>
-          <div className="absolute inset-y-0 right-0 w-[49%]">
+          <div className="absolute inset-y-0 left-1/4 w-1/4">
+            <Image
+              src="/jason-betz-klub_Ke-268-unsplash.jpg"
+              alt=""
+              fill
+              sizes="25vw"
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="absolute inset-y-0 left-2/4 w-1/4">
+            <Image
+              src="/luba-glazunova-ukTZrFNqCXU-unsplash.jpg"
+              alt=""
+              fill
+              sizes="25vw"
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="absolute inset-y-0 left-3/4 w-1/4">
             <Image
               src="/annie-spratt-MChSQHxGZrQ-unsplash.jpg"
               alt=""
               fill
-              sizes="49vw"
+              sizes="25vw"
               className="object-cover"
               priority
             />
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-l from-transparent to-page" />
           </div>
-          <div className="relative z-10 rounded-2xl bg-page/70 px-12 py-10 text-center shadow-md backdrop-blur-2xl">
-            <h1 className="max-w-xl text-4xl font-bold text-foreground">
-              Organiza equipos, calendarios y turnos de servicio en un solo
-              lugar
-            </h1>
+          <div className="absolute inset-0 flex flex-col items-center justify-end px-6 pb-24">
+            <div className="relative z-10 rounded-2xl bg-page/70 px-12 py-10 text-center shadow-md backdrop-blur-2xl">
+              <h1 className="max-w-xl text-4xl font-bold text-foreground">
+                Organiza equipos, calendarios y turnos de servicio en un solo
+                lugar
+              </h1>
+            </div>
           </div>
         </div>
       </main>
