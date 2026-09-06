@@ -43,24 +43,24 @@ export default async function Home() {
       </header>
 
       <main className="relative flex flex-1 flex-col items-center justify-center gap-8 overflow-hidden bg-page px-6 py-20 text-center sm:py-28">
-        <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[28%] lg:block">
+        <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[38%] lg:block">
           <Image
             src="/zane-persaud-Mz7yqJGB6Ls-unsplash.jpg"
             alt=""
             fill
-            sizes="28vw"
+            sizes="38vw"
             className="object-cover"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent to-page" />
         </div>
 
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[28%] lg:block">
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[38%] lg:block">
           <Image
             src="/annie-spratt-MChSQHxGZrQ-unsplash.jpg"
             alt=""
             fill
-            sizes="28vw"
+            sizes="38vw"
             className="object-cover"
             priority
           />
@@ -68,8 +68,9 @@ export default async function Home() {
         </div>
 
         <div className="relative z-10 flex flex-col items-center gap-8">
-          <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
-            Equipos de trabajo
+          <h1 className="max-w-xl text-3xl font-bold text-foreground sm:text-4xl">
+            Organiza equipos, calendarios y turnos de servicio en un solo
+            lugar
           </h1>
         </div>
       </main>
