@@ -17,7 +17,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="flex items-center justify-between gap-2 bg-white py-4 pl-3 pr-12 sm:gap-3 sm:pl-10 sm:pr-20">
+      <header className="flex items-center justify-between gap-2 bg-white py-4 pl-3 pr-16 sm:gap-3 sm:pl-10 sm:pr-24">
         <Image
           src="/LuaOne-logo-claro.svg"
           alt="LuaOne"
