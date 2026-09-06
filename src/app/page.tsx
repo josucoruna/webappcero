@@ -17,14 +17,14 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="flex items-center justify-between gap-2 bg-white py-4 pl-3 pr-16 sm:gap-3 sm:pl-10 sm:pr-24">
+      <header className="flex flex-wrap items-center justify-between gap-x-2 gap-y-3 bg-white py-4 pl-3 pr-16 sm:gap-x-3 sm:pl-10 sm:pr-24">
         <Image
           src="/LuaOne-logo-claro.svg"
           alt="LuaOne"
           width={400}
           height={160}
           priority
-          className="h-9 w-auto shrink-0 sm:h-16"
+          className="h-[72px] w-auto shrink-0 sm:h-32"
         />
         <div className="flex shrink-0 gap-1.5 sm:gap-3">
           <Link
