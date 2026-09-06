@@ -42,7 +42,7 @@ export default async function Home() {
         </div>
       </header>
 
-      <main className="relative flex flex-1 flex-col overflow-hidden bg-page lg:items-center lg:justify-end lg:px-6 lg:pb-24">
+      <main className="relative flex flex-1 flex-col justify-center overflow-hidden bg-page lg:items-center lg:justify-end lg:px-6 lg:pb-24">
         <div className="relative h-52 w-full shrink-0 sm:h-64 lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-[49%]">
           <Image
             src="/zane-persaud-Mz7yqJGB6Ls-unsplash.jpg"
@@ -55,8 +55,8 @@ export default async function Home() {
           <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-gradient-to-r from-transparent to-page lg:block" />
         </div>
 
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10 text-center lg:flex-none lg:px-0 lg:py-0">
-          <div className="rounded-2xl bg-page/50 px-6 py-8 shadow-md backdrop-blur-lg sm:px-12 sm:py-10">
+        <div className="relative z-10 flex flex-col items-center justify-center px-6 py-6 text-center lg:px-0 lg:py-0">
+          <div className="rounded-2xl bg-page/60 px-6 py-6 shadow-md backdrop-blur-xl sm:px-12 sm:py-10 lg:bg-page/70 lg:backdrop-blur-2xl">
             <h1 className="max-w-xl text-3xl font-bold text-foreground sm:text-4xl">
               Organiza equipos, calendarios y turnos de servicio en un solo
               lugar
