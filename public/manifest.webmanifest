@@ -1,0 +1,14 @@
+{
+  "name": "LuaOne",
+  "short_name": "LuaOne",
+  "description": "Gestión de equipos de trabajo, servicios y asignaciones",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#0f766e",
+  "icons": [
+    { "src": "/LuaOne-icono-256.png", "sizes": "256x256", "type": "image/png" },
+    { "src": "/LuaOne-icono-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/LuaOne-icono-1024.png", "sizes": "1024x1024", "type": "image/png" }
+  ]
+}

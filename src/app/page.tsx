@@ -42,38 +42,71 @@ export default async function Home() {
         </div>
       </header>
 
-      <main className="relative flex flex-1 flex-col justify-center overflow-hidden bg-page lg:items-center lg:justify-end lg:px-6 lg:pb-24">
-        <div className="relative h-52 w-full shrink-0 sm:h-64 lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-[49%]">
-          <Image
-            src="/zane-persaud-Mz7yqJGB6Ls-unsplash.jpg"
-            alt=""
-            fill
-            sizes="(min-width: 1024px) 49vw, 100vw"
-            className="object-cover"
-            priority
-          />
-          <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-gradient-to-r from-transparent to-page lg:block" />
+      <main className="relative flex flex-1 flex-col overflow-hidden bg-page">
+        {/* Móvil: las dos fotos apiladas casi pegadas, con el titular flotando sobre la unión. */}
+        <div className="relative min-h-[420px] flex-1 lg:hidden">
+          <div className="absolute inset-x-0 top-0 h-1/2">
+            <Image
+              src="/zane-persaud-Mz7yqJGB6Ls-unsplash.jpg"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-page" />
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-1/2">
+            <Image
+              src="/annie-spratt-MChSQHxGZrQ-unsplash.jpg"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-t from-transparent to-page" />
+          </div>
+          <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
+            <div className="rounded-2xl bg-page/60 px-6 py-6 shadow-md backdrop-blur-xl">
+              <h1 className="text-3xl font-bold text-foreground">
+                Organiza equipos, calendarios y turnos de servicio en un solo
+                lugar
+              </h1>
+            </div>
+          </div>
         </div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center px-6 py-6 text-center lg:px-0 lg:py-0">
-          <div className="rounded-2xl bg-page/60 px-6 py-6 shadow-md backdrop-blur-xl sm:px-12 sm:py-10 lg:bg-page/70 lg:backdrop-blur-2xl">
-            <h1 className="max-w-xl text-3xl font-bold text-foreground sm:text-4xl">
+        {/* Escritorio: las dos fotos casi pegadas a los lados, con el titular hacia la parte baja. */}
+        <div className="relative hidden flex-1 lg:flex lg:flex-col lg:items-center lg:justify-end lg:px-6 lg:pb-24">
+          <div className="absolute inset-y-0 left-0 w-[49%]">
+            <Image
+              src="/zane-persaud-Mz7yqJGB6Ls-unsplash.jpg"
+              alt=""
+              fill
+              sizes="49vw"
+              className="object-cover"
+              priority
+            />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-r from-transparent to-page" />
+          </div>
+          <div className="absolute inset-y-0 right-0 w-[49%]">
+            <Image
+              src="/annie-spratt-MChSQHxGZrQ-unsplash.jpg"
+              alt=""
+              fill
+              sizes="49vw"
+              className="object-cover"
+              priority
+            />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-l from-transparent to-page" />
+          </div>
+          <div className="relative z-10 rounded-2xl bg-page/70 px-12 py-10 text-center shadow-md backdrop-blur-2xl">
+            <h1 className="max-w-xl text-4xl font-bold text-foreground">
               Organiza equipos, calendarios y turnos de servicio en un solo
               lugar
             </h1>
           </div>
-        </div>
-
-        <div className="relative h-52 w-full shrink-0 sm:h-64 lg:absolute lg:inset-y-0 lg:right-0 lg:h-auto lg:w-[49%]">
-          <Image
-            src="/annie-spratt-MChSQHxGZrQ-unsplash.jpg"
-            alt=""
-            fill
-            sizes="(min-width: 1024px) 49vw, 100vw"
-            className="object-cover"
-            priority
-          />
-          <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/3 bg-gradient-to-l from-transparent to-page lg:block" />
         </div>
       </main>
     </div>
