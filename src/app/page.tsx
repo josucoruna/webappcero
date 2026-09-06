@@ -24,7 +24,7 @@ export default async function Home() {
           width={400}
           height={160}
           priority
-          className="h-16 w-auto shrink-0 sm:h-32"
+          className="h-16 w-auto shrink-0 sm:h-20"
         />
         <div className="flex shrink-0 gap-1 sm:gap-3">
           <Link
@@ -119,9 +119,9 @@ export default async function Home() {
               priority
             />
           </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-end px-6 pb-24">
-            <div className="relative z-10 rounded-2xl bg-page/70 px-12 py-10 text-center shadow-md backdrop-blur-2xl">
-              <h1 className="max-w-xl text-4xl font-bold text-foreground">
+          <div className="absolute inset-0 flex flex-col items-center justify-end px-6 pb-10">
+            <div className="relative z-10 w-full max-w-3xl rounded-2xl bg-page/70 px-16 py-6 text-center shadow-md backdrop-blur-2xl">
+              <h1 className="text-3xl font-bold text-foreground">
                 Organiza equipos, calendarios y turnos de servicio en un solo
                 lugar
               </h1>
