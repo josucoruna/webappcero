@@ -106,7 +106,7 @@ export default async function CalendarPage({
           return (
             <div
               key={key}
-              className={`group relative min-h-[92px] rounded-xl border border-line p-1.5 shadow-sm ring-1 ring-inset ring-white/10 transition dark:shadow-none ${
+              className={`group relative min-h-[92px] rounded-xl border-2 border-zinc-300 p-1.5 shadow-sm ring-1 ring-inset ring-white/10 transition dark:border-zinc-600 dark:shadow-none ${
                 !isCurrentMonth
                   ? "bg-muted-surface"
                   : isSaturday
