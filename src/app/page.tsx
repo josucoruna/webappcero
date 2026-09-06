@@ -3,11 +3,17 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/authz";
-import { buttonClassName } from "@/components/ui/Button";
 
 export default async function Home() {
   const user = await getCurrentUser();
   if (user) redirect("/dashboard");
+
+  // La franja de cabecera es siempre blanca (no sigue el tema), así que sus
+  // botones usan colores fijos en vez de los tokens de tema: si usaran los
+  // tokens, en modo oscuro el texto se volvería casi blanco y desaparecería
+  // sobre este fondo blanco.
+  const headerButtonBase =
+    "inline-flex items-center justify-center whitespace-nowrap rounded-md h-8 px-3 text-sm font-medium transition";
 
   return (
     <div className="flex flex-1 flex-col">
@@ -23,21 +29,13 @@ export default async function Home() {
         <div className="flex shrink-0 gap-2 sm:gap-3">
           <Link
             href="/login"
-            className={buttonClassName({
-              variant: "secondary",
-              size: "sm",
-              className: "whitespace-nowrap",
-            })}
+            className={`${headerButtonBase} border border-zinc-300 text-zinc-900 hover:bg-zinc-100`}
           >
             Iniciar sesión
           </Link>
           <Link
             href="/register"
-            className={buttonClassName({
-              variant: "primary",
-              size: "sm",
-              className: "whitespace-nowrap",
-            })}
+            className={`${headerButtonBase} bg-zinc-900 text-white hover:opacity-90`}
           >
             Crear cuenta
           </Link>
@@ -73,20 +71,6 @@ export default async function Home() {
           <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
             Equipos de trabajo
           </h1>
-          <div className="flex gap-4">
-            <Link
-              href="/login"
-              className={buttonClassName({ variant: "primary", size: "lg" })}
-            >
-              Iniciar sesión
-            </Link>
-            <Link
-              href="/register"
-              className={buttonClassName({ variant: "secondary", size: "lg" })}
-            >
-              Crear cuenta
-            </Link>
-          </div>
         </div>
       </main>
     </div>

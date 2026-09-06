@@ -31,7 +31,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans-app);
   --font-mono: var(--font-geist-mono);
   --color-page: var(--color-page);
   --color-surface: var(--color-surface);
