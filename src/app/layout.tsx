@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
-const sansFont = Inter({
-  variable: "--font-sans-app",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -22,7 +17,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${sansFont.variable} ${geistMono.variable} h-full antialiased dark`}
+      className={`${geistMono.variable} h-full antialiased dark`}
       suppressHydrationWarning
     >
       <head>

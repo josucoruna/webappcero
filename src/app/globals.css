@@ -31,7 +31,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-sans-app);
+  --font-sans: Arial, Helvetica, sans-serif;
   --font-mono: var(--font-geist-mono);
   --color-page: var(--color-page);
   --color-surface: var(--color-surface);
@@ -49,5 +49,5 @@
 body {
   background: var(--color-page);
   color: var(--color-foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
