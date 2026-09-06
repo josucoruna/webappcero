@@ -68,8 +68,8 @@ export default async function Home() {
             <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-t from-transparent to-page" />
           </div>
           <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
-            <div className="rounded-2xl bg-page/60 px-6 py-6 shadow-md backdrop-blur-xl">
-              <h1 className="text-3xl font-bold text-foreground">
+            <div className="rounded-2xl bg-zinc-900/70 px-6 py-6 shadow-md backdrop-blur-xl">
+              <h1 className="text-3xl font-bold text-white">
                 Organiza equipos, calendarios y turnos de servicio en un solo
                 lugar
               </h1>
@@ -120,8 +120,8 @@ export default async function Home() {
             />
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-end px-6 pb-10">
-            <div className="relative z-10 w-full max-w-3xl rounded-2xl bg-page/70 px-16 py-6 text-center shadow-md backdrop-blur-2xl">
-              <h1 className="text-3xl font-bold text-foreground">
+            <div className="relative z-10 w-full max-w-3xl rounded-2xl bg-zinc-900/70 px-16 py-6 text-center shadow-md backdrop-blur-2xl">
+              <h1 className="text-3xl font-bold text-white">
                 Organiza equipos, calendarios y turnos de servicio en un solo
                 lugar
               </h1>
