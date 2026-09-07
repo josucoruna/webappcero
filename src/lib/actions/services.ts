@@ -6,6 +6,8 @@ import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { canManageTeam, requireTeamManager, requireUser } from "@/lib/authz";
+import { sendAssignmentEmail, sendDeclineNotificationEmail } from "@/lib/email";
+import { getBaseUrl } from "@/lib/url";
 
 export type ActionState = { error?: string };
 
@@ -141,7 +143,7 @@ export async function addPosition(
     }
   }
 
-  await prisma.position.create({
+  const position = await prisma.position.create({
     data: {
       name,
       serviceId,
@@ -149,6 +151,10 @@ export async function addPosition(
       status: "PENDING",
     },
   });
+
+  if (assignedUserId) {
+    await notifyPositionAssigned(position.id, teamId, serviceId);
+  }
 
   revalidatePath(`/teams/${teamId}/services/${serviceId}`);
   return {};
@@ -193,7 +199,43 @@ export async function assignPosition(
     },
   });
 
+  if (assignedUserId) {
+    await notifyPositionAssigned(positionId, teamId, serviceId);
+  }
+
   revalidatePath(`/teams/${teamId}/services/${serviceId}`);
+}
+
+/** Avisa por email a quien acaba de ser asignado a un puesto. No lanza si
+ * el envío falla: una asignación no debería fallar por culpa del email. */
+async function notifyPositionAssigned(
+  positionId: string,
+  teamId: string,
+  serviceId: string,
+) {
+  try {
+    const position = await prisma.position.findUnique({
+      where: { id: positionId },
+      include: {
+        assignedUser: { select: { email: true } },
+        service: {
+          select: { title: true, date: true, team: { select: { name: true } } },
+        },
+      },
+    });
+    if (!position?.assignedUser) return;
+
+    const baseUrl = await getBaseUrl();
+    await sendAssignmentEmail(position.assignedUser.email, {
+      positionName: position.name,
+      serviceTitle: position.service.title,
+      teamName: position.service.team.name,
+      serviceDate: position.service.date,
+      serviceUrl: `${baseUrl}/teams/${teamId}/services/${serviceId}`,
+    });
+  } catch (error) {
+    console.error("Error enviando email de asignación", error);
+  }
 }
 
 async function getOwnAssignedPosition(positionId: string) {
@@ -201,12 +243,24 @@ async function getOwnAssignedPosition(positionId: string) {
 
   const position = await prisma.position.findUnique({
     where: { id: positionId },
-    select: { assignedUserId: true, service: { select: { teamId: true } } },
+    select: {
+      name: true,
+      assignedUserId: true,
+      service: {
+        select: {
+          id: true,
+          title: true,
+          date: true,
+          teamId: true,
+          team: { select: { name: true } },
+        },
+      },
+    },
   });
   if (!position || position.assignedUserId !== user.id) {
     throw new Error("No tienes permiso para responder a esta asignación");
   }
-  return position;
+  return { ...position, user };
 }
 
 /** El propio miembro confirma su asignación. */
@@ -245,6 +299,31 @@ export async function declineAssignment(
     where: { id: positionId },
     data: { status: "DECLINED", declineReason },
   });
+
+  try {
+    const leaders = await prisma.teamMembership.findMany({
+      where: { teamId: position.service.teamId, role: "LEADER" },
+      select: { user: { select: { email: true } } },
+    });
+    if (leaders.length > 0) {
+      const baseUrl = await getBaseUrl();
+      const serviceUrl = `${baseUrl}/teams/${position.service.teamId}/services/${position.service.id}`;
+      await Promise.all(
+        leaders.map((leader) =>
+          sendDeclineNotificationEmail(leader.user.email, {
+            memberName: position.user.name,
+            positionName: position.name,
+            serviceTitle: position.service.title,
+            teamName: position.service.team.name,
+            declineReason,
+            serviceUrl,
+          }),
+        ),
+      );
+    }
+  } catch (error) {
+    console.error("Error enviando email de rechazo", error);
+  }
 
   revalidatePath("/dashboard");
   revalidatePath(`/teams/${position.service.teamId}`);

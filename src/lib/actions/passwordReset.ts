@@ -1,12 +1,12 @@
 "use server";
 
 import { randomBytes, createHash } from "crypto";
-import { headers } from "next/headers";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { getBaseUrl } from "@/lib/url";
 import { signIn } from "@/auth";
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hora
@@ -15,13 +15,6 @@ export type RequestResetState = { error?: string; sent?: boolean };
 
 function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
-}
-
-async function getBaseUrl() {
-  const h = await headers();
-  const host = h.get("host");
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  return `${proto}://${host}`;
 }
 
 const emailSchema = z.string().trim().toLowerCase().email("Email no válido");
