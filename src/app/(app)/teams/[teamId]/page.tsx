@@ -48,6 +48,31 @@ export default async function TeamPage({
 
   const canManage = await canManageTeam(user, teamId);
 
+  let serviceHistory: { userId: string; name: string; count: number }[] = [];
+  if (canManage) {
+    const since = new Date();
+    since.setDate(since.getDate() - 90);
+    const counts = await prisma.position.groupBy({
+      by: ["assignedUserId"],
+      where: {
+        assignedUserId: { in: team.memberships.map((m) => m.userId) },
+        status: "CONFIRMED",
+        service: { teamId, date: { gte: since } },
+      },
+      _count: { _all: true },
+    });
+    const countByUserId = new Map(
+      counts.map((c) => [c.assignedUserId as string, c._count._all]),
+    );
+    serviceHistory = team.memberships
+      .map((m) => ({
+        userId: m.userId,
+        name: m.user.name,
+        count: countByUserId.get(m.userId) ?? 0,
+      }))
+      .sort((a, b) => b.count - a.count);
+  }
+
   return (
     <>
       {canManage ? (
@@ -135,6 +160,33 @@ export default async function TeamPage({
           ))}
         </ul>
       </section>
+
+      {canManage && (
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold text-foreground">
+            Historial de servicio
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            Veces confirmadas en los últimos 3 meses, para repartir mejor la
+            carga.
+          </p>
+          <ul className="mt-4 flex flex-col gap-2">
+            {serviceHistory.map((entry) => (
+              <Card
+                as="li"
+                key={entry.userId}
+                padding="p-3"
+                className="flex items-center justify-between"
+              >
+                <p className="font-medium text-foreground">{entry.name}</p>
+                <span className="text-sm text-muted">
+                  {entry.count} {entry.count === 1 ? "vez" : "veces"}
+                </span>
+              </Card>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {canManage && (
         <section className="mt-10">
