@@ -9,7 +9,7 @@ import { cardClassName } from "@/components/ui/Card";
 
 const initialState: ActionState = {};
 
-type Member = { userId: string; name: string };
+type Member = { userId: string; name: string; unavailable?: boolean };
 
 export function AddPositionForm({
   teamId,
@@ -61,7 +61,7 @@ export function AddPositionForm({
           <option value="">Sin asignar</option>
           {members.map((member) => (
             <option key={member.userId} value={member.userId}>
-              {member.name}
+              {member.unavailable ? `⚠ ${member.name} (no disponible)` : member.name}
             </option>
           ))}
         </select>

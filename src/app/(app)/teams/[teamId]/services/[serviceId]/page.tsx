@@ -40,9 +40,22 @@ export default async function ServicePage({
   if (!isMember && !isSameOrgAdmin) redirect("/dashboard");
 
   const canManage = await canManageTeam(user, teamId);
+
+  const memberIds = service.team.memberships.map((m) => m.userId);
+  const unavailable = await prisma.unavailability.findMany({
+    where: {
+      userId: { in: memberIds },
+      startDate: { lte: service.date },
+      endDate: { gte: service.date },
+    },
+    select: { userId: true },
+  });
+  const unavailableUserIds = new Set(unavailable.map((u) => u.userId));
+
   const members = service.team.memberships.map((m) => ({
     userId: m.userId,
     name: m.user.name,
+    unavailable: unavailableUserIds.has(m.userId),
   }));
 
   return (
@@ -147,6 +160,15 @@ export default async function ServicePage({
                   ) : (
                     <p className="text-sm text-muted">
                       {position.assignedUser?.name ?? "Sin asignar"}
+                      {position.assignedUserId &&
+                        unavailableUserIds.has(position.assignedUserId) && (
+                          <span
+                            className="ml-1 text-amber-600 dark:text-amber-400"
+                            title="Esta persona marcó que no estaría disponible"
+                          >
+                            ⚠
+                          </span>
+                        )}
                     </p>
                   )}
 

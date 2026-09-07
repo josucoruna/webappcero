@@ -20,6 +20,9 @@ export function Header({ user }: { user: CurrentUser }) {
           <Link href="/calendar" className="hover:text-foreground">
             Calendario
           </Link>
+          <Link href="/availability" className="hover:text-foreground">
+            Mi disponibilidad
+          </Link>
           {user.isSuperAdmin && (
             <>
               <Link href="/admin/teams" className="hover:text-foreground">
