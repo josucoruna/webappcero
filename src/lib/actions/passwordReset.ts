@@ -51,7 +51,13 @@ export async function requestPasswordReset(
 
     const baseUrl = await getBaseUrl();
     const resetUrl = `${baseUrl}/reset-password?token=${rawToken}`;
-    await sendPasswordResetEmail(user.email, resetUrl);
+    try {
+      await sendPasswordResetEmail(user.email, resetUrl);
+    } catch (error) {
+      // No revelamos el fallo al usuario (evita filtrar si el email existe),
+      // pero lo dejamos en los logs del servidor para poder diagnosticarlo.
+      console.error("Error enviando email de recuperación de contraseña", error);
+    }
   }
 
   return { sent: true };
