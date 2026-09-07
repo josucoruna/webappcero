@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { createService, type ActionState } from "@/lib/actions/services";
 import { Button } from "@/components/ui/Button";
@@ -15,12 +15,13 @@ export function CreateServiceForm({ teamId }: { teamId: string }) {
     createServiceForTeam,
     initialState,
   );
+  const [repeatWeekly, setRepeatWeekly] = useState(false);
 
   return (
     <form
       action={formAction}
       className={cardClassName({
-        className: "flex flex-col gap-3 sm:flex-row sm:items-end",
+        className: "flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end",
       })}
     >
       <div className="flex flex-1 flex-col gap-1">
@@ -47,6 +48,32 @@ export function CreateServiceForm({ teamId }: { teamId: string }) {
         </label>
         <Input id="notes" name="notes" type="text" />
       </div>
+
+      <div className="flex w-full items-center gap-2">
+        <input
+          id="repeatWeekly"
+          name="repeatWeekly"
+          type="checkbox"
+          checked={repeatWeekly}
+          onChange={(event) => setRepeatWeekly(event.target.checked)}
+          className="h-4 w-4 rounded border-input"
+        />
+        <label htmlFor="repeatWeekly" className="text-sm text-foreground">
+          Repetir cada semana (mismo día y hora)
+        </label>
+      </div>
+      {repeatWeekly && (
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="repeatUntil"
+            className="text-sm font-medium text-foreground"
+          >
+            Repetir hasta
+          </label>
+          <Input id="repeatUntil" name="repeatUntil" type="date" required />
+        </div>
+      )}
+
       <Button type="submit" variant="primary" disabled={pending}>
         {pending ? "Creando…" : "Crear servicio"}
       </Button>

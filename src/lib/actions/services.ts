@@ -17,6 +17,50 @@ const serviceSchema = z.object({
   notes: z.string().trim().optional(),
 });
 
+const MAX_RECURRING_OCCURRENCES = 52;
+
+/** Genera fechas semanales (mismo día y hora que `start`) hasta `until`
+ * inclusive, con un tope para no crear cientos de servicios por error. */
+function generateWeeklyDates(start: Date, until: Date): Date[] {
+  const dates: Date[] = [];
+  let current = start;
+  while (current <= until && dates.length < MAX_RECURRING_OCCURRENCES) {
+    dates.push(current);
+    const next = new Date(current);
+    next.setDate(next.getDate() + 7);
+    current = next;
+  }
+  return dates;
+}
+
+/** Lee y valida los campos de recurrencia de un formulario de servicio.
+ * Devuelve la lista de fechas a crear (solo `date` si no se repite). */
+function resolveServiceDates(
+  formData: FormData,
+  date: Date,
+): { dates: Date[] } | { error: string } {
+  const repeatWeekly = formData.get("repeatWeekly") === "on";
+  if (!repeatWeekly) return { dates: [date] };
+
+  const repeatUntilRaw = String(formData.get("repeatUntil") ?? "");
+  if (!repeatUntilRaw) {
+    return { error: "Indica hasta qué fecha se repite" };
+  }
+  const repeatUntil = new Date(repeatUntilRaw);
+  if (Number.isNaN(repeatUntil.getTime())) {
+    return { error: "La fecha de fin no es válida" };
+  }
+  // El campo "hasta" es solo una fecha (sin hora): la extendemos al final
+  // del día para no dejar fuera la última ocurrencia si su hora es
+  // posterior a medianoche.
+  repeatUntil.setHours(23, 59, 59, 999);
+  if (repeatUntil < date) {
+    return { error: "La fecha de fin debe ser posterior a la fecha de inicio" };
+  }
+
+  return { dates: generateWeeklyDates(date, repeatUntil) };
+}
+
 export async function createService(
   teamId: string,
   _prevState: ActionState,
@@ -38,16 +82,20 @@ export async function createService(
     return { error: "La fecha no es válida" };
   }
 
-  await prisma.service.create({
-    data: {
+  const resolved = resolveServiceDates(formData, date);
+  if ("error" in resolved) return { error: resolved.error };
+
+  await prisma.service.createMany({
+    data: resolved.dates.map((d) => ({
       title: parsed.data.title,
-      date,
+      date: d,
       notes: parsed.data.notes || null,
       teamId,
-    },
+    })),
   });
 
   revalidatePath(`/teams/${teamId}`);
+  revalidatePath("/calendar");
   return {};
 }
 
@@ -77,18 +125,32 @@ export async function createServiceFromCalendar(
     return { error: "La fecha no es válida" };
   }
 
-  const service = await prisma.service.create({
+  const resolved = resolveServiceDates(formData, date);
+  if ("error" in resolved) return { error: resolved.error };
+  const [firstDate, ...restDates] = resolved.dates;
+
+  const firstService = await prisma.service.create({
     data: {
       title: parsed.data.title,
-      date,
+      date: firstDate,
       notes: parsed.data.notes || null,
       teamId,
     },
   });
+  if (restDates.length > 0) {
+    await prisma.service.createMany({
+      data: restDates.map((d) => ({
+        title: parsed.data.title,
+        date: d,
+        notes: parsed.data.notes || null,
+        teamId,
+      })),
+    });
+  }
 
   revalidatePath("/calendar");
   revalidatePath(`/teams/${teamId}`);
-  redirect(`/teams/${teamId}/services/${service.id}`);
+  redirect(`/teams/${teamId}/services/${firstService.id}`);
 }
 
 /** Comprueba que el servicio existe y pertenece de verdad a ese equipo. */
