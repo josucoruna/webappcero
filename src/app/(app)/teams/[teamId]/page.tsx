@@ -36,7 +36,9 @@ export default async function TeamPage({
   if (!team) notFound();
 
   const isMember = team.memberships.some((m) => m.userId === user.id);
-  if (!isMember && !user.isSuperAdmin) redirect("/dashboard");
+  const isSameOrgAdmin =
+    user.isSuperAdmin && team.organizationId === user.organizationId;
+  if (!isMember && !isSameOrgAdmin) redirect("/dashboard");
 
   const canManage = await canManageTeam(user, teamId);
 

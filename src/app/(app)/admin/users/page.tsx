@@ -9,6 +9,7 @@ export default async function AdminUsersPage() {
   const currentUser = await requireSuperAdmin();
 
   const users = await prisma.user.findMany({
+    where: { organizationId: currentUser.organizationId },
     orderBy: { name: "asc" },
   });
 

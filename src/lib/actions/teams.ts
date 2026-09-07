@@ -17,7 +17,7 @@ export async function createTeam(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  await requireSuperAdmin();
+  const admin = await requireSuperAdmin();
 
   const parsed = teamSchema.safeParse({
     name: formData.get("name"),
@@ -31,6 +31,7 @@ export async function createTeam(
     data: {
       name: parsed.data.name,
       description: parsed.data.description || null,
+      organizationId: admin.organizationId,
     },
   });
 
@@ -39,7 +40,14 @@ export async function createTeam(
 }
 
 export async function deleteTeam(teamId: string): Promise<void> {
-  await requireSuperAdmin();
+  const admin = await requireSuperAdmin();
+  const team = await prisma.team.findUnique({
+    where: { id: teamId },
+    select: { organizationId: true },
+  });
+  if (!team || team.organizationId !== admin.organizationId) {
+    throw new Error("Ese equipo no pertenece a tu organización");
+  }
   await prisma.team.delete({ where: { id: teamId } });
   revalidatePath("/admin/teams");
 }
@@ -49,7 +57,7 @@ export async function addTeamMember(
   formData: FormData,
 ): Promise<ActionState> {
   const teamId = String(formData.get("teamId") ?? "");
-  await requireTeamManager(teamId);
+  const manager = await requireTeamManager(teamId);
 
   const email = String(formData.get("email") ?? "")
     .trim()
@@ -59,7 +67,7 @@ export async function addTeamMember(
   if (!email) return { error: "Indica un email" };
 
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
+  if (!user || user.organizationId !== manager.organizationId) {
     return { error: "No existe ninguna persona registrada con ese email" };
   }
 

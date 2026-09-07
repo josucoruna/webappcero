@@ -10,21 +10,54 @@ datasource db {
   provider = "postgresql"
 }
 
-// Una persona de la iglesia. isSuperAdmin da control total sobre toda la app.
+// Una organización (iglesia) usando la app. Todo lo demás pertenece a una.
+// organizationId es opcional a nivel de columna (de forma temporal) para no
+// romper filas ya existentes de antes de este modelo; en la práctica siempre
+// se rellena (ver src/lib/organization.ts).
+model Organization {
+  id               String   @id @default(cuid())
+  name             String
+  registrationCode String   @unique
+  createdAt        DateTime @default(now())
+
+  users User[]
+  teams Team[]
+
+  @@map("organizations")
+}
+
+// Una persona de la iglesia. isSuperAdmin da control total dentro de SU
+// organización (no sobre otras organizaciones).
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  isSuperAdmin Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String        @id @default(cuid())
+  name           String
+  email          String        @unique
+  passwordHash   String
+  isSuperAdmin   Boolean       @default(false)
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   memberships         TeamMembership[]
   assignedPositions   Position[]
   passwordResetTokens PasswordResetToken[]
+  unavailabilities    Unavailability[]
 
   @@map("users")
+}
+
+// Un rango de fechas en el que una persona no está disponible para servir.
+model Unavailability {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@map("unavailabilities")
 }
 
 // Token de un solo uso para restablecer la contraseña por email.
@@ -42,10 +75,12 @@ model PasswordResetToken {
 
 // Un equipo de trabajo (Alabanza, Sonido, Niños, etc.)
 model Team {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
+  id             String        @id @default(cuid())
+  name           String
+  description    String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String?
+  createdAt      DateTime      @default(now())
 
   memberships TeamMembership[]
   services    Service[]

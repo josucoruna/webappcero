@@ -9,6 +9,7 @@ export type CurrentUser = {
   name: string;
   email: string;
   isSuperAdmin: boolean;
+  organizationId: string;
 };
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
@@ -19,6 +20,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     name: session.user.name ?? "",
     email: session.user.email ?? "",
     isSuperAdmin: session.user.isSuperAdmin,
+    organizationId: session.user.organizationId,
   };
 }
 
@@ -46,12 +48,19 @@ export async function getTeamRole(
   return membership?.role ?? null;
 }
 
-/** El admin principal siempre puede; un líder solo en su propio equipo. */
+/** El admin principal puede en cualquier equipo de SU organización; un
+ * líder solo en su propio equipo. */
 export async function canManageTeam(
   user: CurrentUser,
   teamId: string,
 ): Promise<boolean> {
-  if (user.isSuperAdmin) return true;
+  if (user.isSuperAdmin) {
+    const team = await prisma.team.findUnique({
+      where: { id: teamId },
+      select: { organizationId: true },
+    });
+    return team?.organizationId === user.organizationId;
+  }
   const role = await getTeamRole(user.id, teamId);
   return role === "LEADER";
 }

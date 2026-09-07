@@ -35,7 +35,9 @@ export default async function ServicePage({
   if (!service || service.teamId !== teamId) notFound();
 
   const isMember = service.team.memberships.some((m) => m.userId === user.id);
-  if (!isMember && !user.isSuperAdmin) redirect("/dashboard");
+  const isSameOrgAdmin =
+    user.isSuperAdmin && service.team.organizationId === user.organizationId;
+  if (!isMember && !isSameOrgAdmin) redirect("/dashboard");
 
   const canManage = await canManageTeam(user, teamId);
   const members = service.team.memberships.map((m) => ({

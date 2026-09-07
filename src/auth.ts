@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "@/lib/prisma";
+import { ensureOrganization } from "@/lib/organization";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
@@ -34,24 +35,48 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           name: user.name,
           email: user.email,
           isSuperAdmin: user.isSuperAdmin,
+          organizationId: user.organizationId,
         };
       },
     }),
   ],
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id as string;
         token.isSuperAdmin = Boolean(
           (user as { isSuperAdmin?: boolean }).isSuperAdmin,
         );
+        token.organizationId =
+          (user as { organizationId?: string | null }).organizationId ??
+          undefined;
       }
+
+      // Sesiones creadas antes de introducir organizaciones (o de una
+      // fila todavía no migrada) no traen organizationId: lo rellenamos
+      // aquí para no obligar a todo el mundo a volver a iniciar sesión.
+      if (!token.organizationId && token.id) {
+        let dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { organizationId: true },
+        });
+        if (!dbUser?.organizationId) {
+          await ensureOrganization();
+          dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { organizationId: true },
+          });
+        }
+        token.organizationId = dbUser?.organizationId ?? undefined;
+      }
+
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.isSuperAdmin = Boolean(token.isSuperAdmin);
+        session.user.organizationId = (token.organizationId as string) ?? "";
       }
       return session;
     },

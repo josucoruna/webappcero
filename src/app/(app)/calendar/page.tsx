@@ -26,7 +26,7 @@ export default async function CalendarPage({
       where: {
         date: { gte: gridStart, lt: gridEnd },
         team: user.isSuperAdmin
-          ? undefined
+          ? { organizationId: user.organizationId }
           : { memberships: { some: { userId: user.id } } },
       },
       include: { team: true },
@@ -34,7 +34,7 @@ export default async function CalendarPage({
     }),
     prisma.team.findMany({
       where: user.isSuperAdmin
-        ? undefined
+        ? { organizationId: user.organizationId }
         : { memberships: { some: { userId: user.id, role: "LEADER" } } },
       orderBy: { name: "asc" },
     }),

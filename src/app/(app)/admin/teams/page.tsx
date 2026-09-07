@@ -8,9 +8,10 @@ import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { Card } from "@/components/ui/Card";
 
 export default async function AdminTeamsPage() {
-  await requireSuperAdmin();
+  const admin = await requireSuperAdmin();
 
   const teams = await prisma.team.findMany({
+    where: { organizationId: admin.organizationId },
     orderBy: { name: "asc" },
     include: { _count: { select: { memberships: true, services: true } } },
   });

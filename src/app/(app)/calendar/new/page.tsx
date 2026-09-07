@@ -16,7 +16,7 @@ export default async function NewServiceFromCalendarPage({
 
   const manageableTeams = await prisma.team.findMany({
     where: user.isSuperAdmin
-      ? undefined
+      ? { organizationId: user.organizationId }
       : { memberships: { some: { userId: user.id, role: "LEADER" } } },
     orderBy: { name: "asc" },
   });

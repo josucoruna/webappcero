@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { signIn, signOut } from "@/auth";
+import { ensureOrganization } from "@/lib/organization";
 
 const registerSchema = z.object({
   name: z.string().trim().min(2, "El nombre debe tener al menos 2 letras"),
@@ -34,7 +35,11 @@ export async function registerUser(
 
   const { name, email, password, code } = parsed.data;
 
-  if (code !== process.env.REGISTRATION_CODE) {
+  await ensureOrganization();
+  const organization = await prisma.organization.findUnique({
+    where: { registrationCode: code },
+  });
+  if (!organization) {
     return { error: "Código de acceso incorrecto" };
   }
 
@@ -45,15 +50,19 @@ export async function registerUser(
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  // El primer usuario registrado en toda la app se convierte en admin principal.
-  const usersCount = await prisma.user.count();
+  // El primer usuario registrado en la organización se convierte en su
+  // admin principal.
+  const usersInOrgCount = await prisma.user.count({
+    where: { organizationId: organization.id },
+  });
 
   await prisma.user.create({
     data: {
       name,
       email,
       passwordHash,
-      isSuperAdmin: usersCount === 0,
+      isSuperAdmin: usersInOrgCount === 0,
+      organizationId: organization.id,
     },
   });
 
