@@ -7,6 +7,7 @@ import { removeTeamMember, setTeamMemberRole } from "@/lib/actions/teams";
 import { deleteIncompatibility } from "@/lib/actions/incompatibilities";
 import { AddIncompatibilityForm } from "@/components/forms/AddIncompatibilityForm";
 import { AddMemberForm } from "@/components/forms/AddMemberForm";
+import { BulkAssignPositionForm } from "@/components/forms/BulkAssignPositionForm";
 import { CreateServiceForm } from "@/components/forms/CreateServiceForm";
 import { UpdateTeamForm } from "@/components/forms/UpdateTeamForm";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
@@ -72,6 +73,8 @@ export default async function TeamPage({
       }))
       .sort((a, b) => b.count - a.count);
   }
+
+  const upcomingServices = team.services.filter((s) => s.date >= new Date());
 
   return (
     <>
@@ -245,6 +248,33 @@ export default async function TeamPage({
               </p>
             )}
           </ul>
+        </section>
+      )}
+
+      {canManage && (
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold text-foreground">
+            Asignación masiva
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            Asigna a una persona el mismo puesto en varios servicios ya
+            creados de una vez. Si un servicio ya tiene ese puesto, se deja
+            tal cual.
+          </p>
+          <div className="mt-3">
+            <BulkAssignPositionForm
+              teamId={team.id}
+              members={team.memberships.map((m) => ({
+                userId: m.userId,
+                name: m.user.name,
+              }))}
+              services={upcomingServices.map((s) => ({
+                id: s.id,
+                title: s.title,
+                date: s.date,
+              }))}
+            />
+          </div>
         </section>
       )}
 

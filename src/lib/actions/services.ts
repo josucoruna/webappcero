@@ -340,6 +340,122 @@ export async function confirmAssignment(positionId: string) {
 
 const MAX_DECLINE_REASON_LENGTH = 150;
 
+export type BulkAssignState = {
+  error?: string;
+  result?: {
+    assignedCount: number;
+    skippedExisting: string[];
+    warnings: { serviceId: string; label: string; reason: string }[];
+  };
+};
+
+/** Asigna a una persona el mismo puesto (por nombre) en varios servicios ya
+ * creados de una vez. Si un servicio ya tiene un puesto con ese nombre, se
+ * deja tal cual (no se toca). Los avisos de no-disponibilidad o
+ * incompatibilidad no bloquean nada: se devuelven en un resumen al final
+ * para poder revisarlos y cambiarlos a mano. */
+export async function bulkAssignPosition(
+  teamId: string,
+  _prevState: BulkAssignState,
+  formData: FormData,
+): Promise<BulkAssignState> {
+  await requireTeamManager(teamId);
+
+  const assignedUserId = String(formData.get("assignedUserId") ?? "");
+  const positionName = String(formData.get("positionName") ?? "").trim();
+  const serviceIds = formData.getAll("serviceIds").map(String);
+
+  if (!assignedUserId) return { error: "Elige una persona" };
+  if (!positionName) return { error: "Indica un nombre de puesto" };
+  if (serviceIds.length === 0) return { error: "Elige al menos un servicio" };
+
+  const isMember = await prisma.teamMembership.findUnique({
+    where: { teamId_userId: { teamId, userId: assignedUserId } },
+  });
+  if (!isMember) return { error: "Esa persona no pertenece a este equipo" };
+
+  const [services, unavailability, incompatibilities, memberships] =
+    await Promise.all([
+      prisma.service.findMany({
+        where: { id: { in: serviceIds }, teamId },
+        include: { positions: true },
+      }),
+      prisma.unavailability.findMany({
+        where: { userId: assignedUserId },
+        select: { startDate: true, endDate: true },
+      }),
+      prisma.incompatibility.findMany({
+        where: {
+          teamId,
+          OR: [{ userAId: assignedUserId }, { userBId: assignedUserId }],
+        },
+      }),
+      prisma.teamMembership.findMany({
+        where: { teamId },
+        include: { user: { select: { name: true } } },
+      }),
+    ]);
+
+  const incompatibleUserIds = new Set(
+    incompatibilities.map((i) =>
+      i.userAId === assignedUserId ? i.userBId : i.userAId,
+    ),
+  );
+  const nameByUserId = new Map(
+    memberships.map((m) => [m.userId, m.user.name]),
+  );
+
+  const skippedExisting: string[] = [];
+  const warnings: { serviceId: string; label: string; reason: string }[] = [];
+  let assignedCount = 0;
+
+  for (const service of services) {
+    const alreadyExists = service.positions.some(
+      (p) => p.name.trim().toLowerCase() === positionName.toLowerCase(),
+    );
+    if (alreadyExists) {
+      skippedExisting.push(service.title);
+      continue;
+    }
+
+    const position = await prisma.position.create({
+      data: {
+        name: positionName,
+        serviceId: service.id,
+        assignedUserId,
+        status: "PENDING",
+      },
+    });
+    assignedCount++;
+    await notifyPositionAssigned(position.id, teamId, service.id);
+    revalidatePath(`/teams/${teamId}/services/${service.id}`);
+
+    const reasons: string[] = [];
+    const isUnavailable = unavailability.some(
+      (u) => u.startDate <= service.date && u.endDate >= service.date,
+    );
+    if (isUnavailable) reasons.push("no disponible ese día");
+    const conflictingPosition = service.positions.find(
+      (p) => p.assignedUserId && incompatibleUserIds.has(p.assignedUserId),
+    );
+    if (conflictingPosition) {
+      reasons.push(
+        `incompatible con ${
+          nameByUserId.get(conflictingPosition.assignedUserId as string) ??
+          "alguien más"
+        }`,
+      );
+    }
+    if (reasons.length > 0) {
+      const label = `${service.title} (${service.date.toLocaleDateString("es-ES")})`;
+      warnings.push({ serviceId: service.id, label, reason: reasons.join(", ") });
+    }
+  }
+
+  revalidatePath(`/teams/${teamId}`);
+  return { result: { assignedCount, skippedExisting, warnings } };
+}
+
 /** El propio miembro rechaza su asignación, indicando un motivo. */
 export async function declineAssignment(
   positionId: string,
