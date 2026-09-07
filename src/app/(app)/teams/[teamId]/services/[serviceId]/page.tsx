@@ -42,20 +42,67 @@ export default async function ServicePage({
   const canManage = await canManageTeam(user, teamId);
 
   const memberIds = service.team.memberships.map((m) => m.userId);
-  const unavailable = await prisma.unavailability.findMany({
-    where: {
-      userId: { in: memberIds },
-      startDate: { lte: service.date },
-      endDate: { gte: service.date },
-    },
-    select: { userId: true },
-  });
+  const [unavailable, incompatibilities] = await Promise.all([
+    prisma.unavailability.findMany({
+      where: {
+        userId: { in: memberIds },
+        startDate: { lte: service.date },
+        endDate: { gte: service.date },
+      },
+      select: { userId: true },
+    }),
+    prisma.incompatibility.findMany({
+      where: { teamId },
+      select: { userAId: true, userBId: true },
+    }),
+  ]);
   const unavailableUserIds = new Set(unavailable.map((u) => u.userId));
+
+  const incompatibleWith = new Map<string, Set<string>>();
+  for (const { userAId, userBId } of incompatibilities) {
+    if (!incompatibleWith.has(userAId)) incompatibleWith.set(userAId, new Set());
+    if (!incompatibleWith.has(userBId)) incompatibleWith.set(userBId, new Set());
+    incompatibleWith.get(userAId)!.add(userBId);
+    incompatibleWith.get(userBId)!.add(userAId);
+  }
+
+  const nameByUserId = new Map(
+    service.team.memberships.map((m) => [m.userId, m.user.name]),
+  );
+
+  const positions = service.positions;
+
+  /** Motivos de aviso para cada miembro, al considerarlo para un puesto
+   * concreto (o para uno nuevo, si no se indica `excludePositionId`). */
+  function warningsFor(excludePositionId?: string) {
+    const othersAssignedIds = positions
+      .filter((p) => p.id !== excludePositionId && p.assignedUserId)
+      .map((p) => p.assignedUserId as string);
+
+    const warningByUserId = new Map<string, string>();
+    for (const memberId of memberIds) {
+      const reasons: string[] = [];
+      if (unavailableUserIds.has(memberId)) reasons.push("no disponible");
+      if (othersAssignedIds.includes(memberId)) {
+        reasons.push("ya tiene otro puesto");
+      }
+      const conflictingWith = othersAssignedIds.find(
+        (otherId) =>
+          otherId !== memberId && incompatibleWith.get(memberId)?.has(otherId),
+      );
+      if (conflictingWith) {
+        reasons.push(
+          `incompatible con ${nameByUserId.get(conflictingWith) ?? "alguien más"}`,
+        );
+      }
+      if (reasons.length > 0) warningByUserId.set(memberId, reasons.join(", "));
+    }
+    return warningByUserId;
+  }
 
   const members = service.team.memberships.map((m) => ({
     userId: m.userId,
     name: m.user.name,
-    unavailable: unavailableUserIds.has(m.userId),
   }));
 
   return (
@@ -99,7 +146,10 @@ export default async function ServicePage({
             <AddPositionForm
               teamId={teamId}
               serviceId={serviceId}
-              members={members}
+              members={members.map((m) => ({
+                ...m,
+                warning: warningsFor().get(m.userId),
+              }))}
             />
           </div>
         )}
@@ -140,7 +190,10 @@ export default async function ServicePage({
                         serviceId={serviceId}
                         positionId={position.id}
                         assignedUserId={position.assignedUserId}
-                        members={members}
+                        members={members.map((m) => ({
+                          ...m,
+                          warning: warningsFor(position.id).get(m.userId),
+                        }))}
                       />
                       <form
                         action={deletePosition.bind(

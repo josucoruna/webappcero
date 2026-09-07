@@ -39,10 +39,12 @@ model User {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  memberships         TeamMembership[]
-  assignedPositions   Position[]
-  passwordResetTokens PasswordResetToken[]
-  unavailabilities    Unavailability[]
+  memberships             TeamMembership[]
+  assignedPositions       Position[]
+  passwordResetTokens     PasswordResetToken[]
+  unavailabilities        Unavailability[]
+  incompatibilitiesAsA    Incompatibility[]     @relation("IncompatibilityUserA")
+  incompatibilitiesAsB    Incompatibility[]     @relation("IncompatibilityUserB")
 
   @@map("users")
 }
@@ -82,10 +84,29 @@ model Team {
   organizationId String?
   createdAt      DateTime      @default(now())
 
-  memberships TeamMembership[]
-  services    Service[]
+  memberships       TeamMembership[]
+  services          Service[]
+  incompatibilities Incompatibility[]
 
   @@map("teams")
+}
+
+// Marca que dos personas del mismo equipo no deben coincidir en un servicio.
+// userAId siempre es < userBId (orden alfabético del id) para no duplicar
+// el mismo par en las dos direcciones.
+model Incompatibility {
+  id        String   @id @default(cuid())
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    String
+  userA     User     @relation("IncompatibilityUserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userAId   String
+  userB     User     @relation("IncompatibilityUserB", fields: [userBId], references: [id], onDelete: Cascade)
+  userBId   String
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@unique([teamId, userAId, userBId])
+  @@map("incompatibilities")
 }
 
 enum TeamRole {

@@ -4,6 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { canManageTeam, requireUser } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import { removeTeamMember, setTeamMemberRole } from "@/lib/actions/teams";
+import { deleteIncompatibility } from "@/lib/actions/incompatibilities";
+import { AddIncompatibilityForm } from "@/components/forms/AddIncompatibilityForm";
 import { AddMemberForm } from "@/components/forms/AddMemberForm";
 import { CreateServiceForm } from "@/components/forms/CreateServiceForm";
 import { UpdateTeamForm } from "@/components/forms/UpdateTeamForm";
@@ -30,6 +32,10 @@ export default async function TeamPage({
       services: {
         orderBy: { date: "asc" },
         include: { _count: { select: { positions: true } } },
+      },
+      incompatibilities: {
+        include: { userA: true, userB: true },
+        orderBy: { createdAt: "asc" },
       },
     },
   });
@@ -129,6 +135,66 @@ export default async function TeamPage({
           ))}
         </ul>
       </section>
+
+      {canManage && (
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold text-foreground">
+            Incompatibilidades
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            Si dos personas no deben coincidir en el mismo servicio, márcalo
+            aquí. No se bloquea la asignación, solo se avisa al asignar.
+          </p>
+          <div className="mt-3">
+            <AddIncompatibilityForm
+              teamId={team.id}
+              members={team.memberships.map((m) => ({
+                userId: m.userId,
+                name: m.user.name,
+              }))}
+            />
+          </div>
+          <ul className="mt-4 flex flex-col gap-2">
+            {team.incompatibilities.map((incompatibility) => (
+              <Card
+                as="li"
+                key={incompatibility.id}
+                padding="p-3"
+                className="flex items-center justify-between gap-3"
+              >
+                <div>
+                  <p className="font-medium text-foreground">
+                    {incompatibility.userA.name} · {incompatibility.userB.name}
+                  </p>
+                  {incompatibility.reason && (
+                    <p className="text-sm text-muted">
+                      {incompatibility.reason}
+                    </p>
+                  )}
+                </div>
+                <form
+                  action={deleteIncompatibility.bind(
+                    null,
+                    team.id,
+                    incompatibility.id,
+                  )}
+                >
+                  <ConfirmSubmitButton
+                    confirmMessage={`¿Quitar la incompatibilidad entre ${incompatibility.userA.name} y ${incompatibility.userB.name}?`}
+                  >
+                    Quitar
+                  </ConfirmSubmitButton>
+                </form>
+              </Card>
+            ))}
+            {team.incompatibilities.length === 0 && (
+              <p className="text-sm text-muted">
+                No hay incompatibilidades marcadas en este equipo.
+              </p>
+            )}
+          </ul>
+        </section>
+      )}
 
       <section className="mt-10">
         <h2 className="text-lg font-semibold text-foreground">Servicios</h2>
