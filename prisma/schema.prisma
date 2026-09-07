@@ -20,10 +20,24 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  memberships       TeamMembership[]
-  assignedPositions Position[]
+  memberships         TeamMembership[]
+  assignedPositions   Position[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
+}
+
+// Token de un solo uso para restablecer la contraseña por email.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("password_reset_tokens")
 }
 
 // Un equipo de trabajo (Alabanza, Sonido, Niños, etc.)
