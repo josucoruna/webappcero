@@ -89,8 +89,31 @@ export async function createServiceFromCalendar(
   redirect(`/teams/${teamId}/services/${service.id}`);
 }
 
+/** Comprueba que el servicio existe y pertenece de verdad a ese equipo. */
+async function requireServiceInTeam(teamId: string, serviceId: string) {
+  const service = await prisma.service.findUnique({
+    where: { id: serviceId },
+    select: { teamId: true },
+  });
+  if (!service || service.teamId !== teamId) {
+    throw new Error("Ese servicio no pertenece a este equipo");
+  }
+}
+
+/** Comprueba que el puesto existe y pertenece de verdad a ese servicio. */
+async function requirePositionInService(serviceId: string, positionId: string) {
+  const position = await prisma.position.findUnique({
+    where: { id: positionId },
+    select: { serviceId: true },
+  });
+  if (!position || position.serviceId !== serviceId) {
+    throw new Error("Ese puesto no pertenece a este servicio");
+  }
+}
+
 export async function deleteService(teamId: string, serviceId: string) {
   await requireTeamManager(teamId);
+  await requireServiceInTeam(teamId, serviceId);
   await prisma.service.delete({ where: { id: serviceId } });
   revalidatePath(`/teams/${teamId}`);
 }
@@ -102,6 +125,7 @@ export async function addPosition(
   formData: FormData,
 ): Promise<ActionState> {
   await requireTeamManager(teamId);
+  await requireServiceInTeam(teamId, serviceId);
 
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return { error: "Indica un nombre para el puesto" };
@@ -136,6 +160,8 @@ export async function deletePosition(
   positionId: string,
 ) {
   await requireTeamManager(teamId);
+  await requireServiceInTeam(teamId, serviceId);
+  await requirePositionInService(serviceId, positionId);
   await prisma.position.delete({ where: { id: positionId } });
   revalidatePath(`/teams/${teamId}/services/${serviceId}`);
 }
@@ -147,6 +173,8 @@ export async function assignPosition(
   formData: FormData,
 ) {
   await requireTeamManager(teamId);
+  await requireServiceInTeam(teamId, serviceId);
+  await requirePositionInService(serviceId, positionId);
 
   const assignedUserId = String(formData.get("assignedUserId") ?? "");
 
