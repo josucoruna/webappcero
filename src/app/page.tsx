@@ -17,25 +17,25 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="flex items-center justify-between gap-1 bg-white py-4 pl-2 pr-16 sm:gap-3 sm:pl-10 sm:pr-24">
+      <header className="flex items-center justify-between gap-1 border-b-4 border-[#0F766E] bg-white py-3 pl-2 pr-16 shadow-sm sm:gap-3 sm:py-4 sm:pl-10 sm:pr-24">
         <Image
           src="/LuaOne-logo-claro.svg"
           alt="LuaOne"
           width={400}
           height={160}
           priority
-          className="h-16 w-auto shrink-0 sm:h-20"
+          className="h-20 w-auto shrink-0 sm:h-24"
         />
         <div className="flex shrink-0 gap-1 sm:gap-3">
           <Link
             href="/login"
-            className={`${headerButtonBase} border border-zinc-300 text-zinc-900 hover:bg-zinc-100`}
+            className={`${headerButtonBase} border border-[#0F766E] text-[#0F766E] hover:bg-[#0F766E]/10`}
           >
             Iniciar sesión
           </Link>
           <Link
             href="/register"
-            className={`${headerButtonBase} bg-zinc-900 text-white hover:opacity-90`}
+            className={`${headerButtonBase} bg-[#0F766E] text-white hover:opacity-90`}
           >
             Crear cuenta
           </Link>
@@ -67,13 +67,11 @@ export default async function Home() {
             />
             <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-t from-transparent to-page" />
           </div>
-          <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
-            <div className="rounded-2xl bg-zinc-900/70 px-6 py-6 shadow-md backdrop-blur-xl">
-              <h1 className="text-3xl font-bold text-white">
-                Organiza equipos, calendarios y turnos de servicio en un solo
-                lugar
-              </h1>
-            </div>
+          <div className="absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-center px-8 text-center">
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 h-44 -translate-y-1/2 bg-gradient-to-b from-transparent via-black/55 to-transparent" />
+            <h1 className="relative max-w-xs text-3xl font-bold text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+              Turnos y calendarios de tu equipo, sin complicaciones
+            </h1>
           </div>
         </div>
 
@@ -119,13 +117,11 @@ export default async function Home() {
               priority
             />
           </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-end px-6 pb-10">
-            <div className="relative z-10 w-full max-w-3xl rounded-2xl bg-zinc-900/70 px-16 py-6 text-center shadow-md backdrop-blur-2xl">
-              <h1 className="text-3xl font-bold text-white">
-                Organiza equipos, calendarios y turnos de servicio en un solo
-                lugar
-              </h1>
-            </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-6 pb-12">
+            <h1 className="relative z-10 max-w-2xl text-center text-4xl font-bold text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+              Turnos y calendarios de tu equipo, sin complicaciones
+            </h1>
           </div>
         </div>
       </main>
