@@ -36,6 +36,8 @@ model User {
   isSuperAdmin   Boolean       @default(false)
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String?
+  failedLoginAttempts Int      @default(0)
+  lockedUntil    DateTime?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 

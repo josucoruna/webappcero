@@ -10,6 +10,7 @@ import { getBaseUrl } from "@/lib/url";
 import { signIn } from "@/auth";
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hora
+const RESEND_COOLDOWN_MS = 60 * 1000; // 1 minuto entre reenvíos
 
 export type RequestResetState = { error?: string; sent?: boolean };
 
@@ -35,28 +36,39 @@ export async function requestPasswordReset(
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (user) {
-    // Invalidamos enlaces anteriores sin usar para que solo el último valga.
-    await prisma.passwordResetToken.deleteMany({
-      where: { userId: user.id, usedAt: null },
+    const lastToken = await prisma.passwordResetToken.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
     });
+    const onCooldown =
+      lastToken &&
+      Date.now() - lastToken.createdAt.getTime() < RESEND_COOLDOWN_MS;
 
-    const rawToken = randomBytes(32).toString("hex");
-    await prisma.passwordResetToken.create({
-      data: {
-        tokenHash: hashToken(rawToken),
-        userId: user.id,
-        expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
-      },
-    });
+    if (!onCooldown) {
+      // Invalidamos enlaces anteriores sin usar para que solo el último valga.
+      await prisma.passwordResetToken.deleteMany({
+        where: { userId: user.id, usedAt: null },
+      });
 
-    const baseUrl = await getBaseUrl();
-    const resetUrl = `${baseUrl}/reset-password?token=${rawToken}`;
-    try {
-      await sendPasswordResetEmail(user.email, resetUrl);
-    } catch (error) {
-      // No revelamos el fallo al usuario (evita filtrar si el email existe),
-      // pero lo dejamos en los logs del servidor para poder diagnosticarlo.
-      console.error("Error enviando email de recuperación de contraseña", error);
+      const rawToken = randomBytes(32).toString("hex");
+      await prisma.passwordResetToken.create({
+        data: {
+          tokenHash: hashToken(rawToken),
+          userId: user.id,
+          expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
+        },
+      });
+
+      const baseUrl = await getBaseUrl();
+      const resetUrl = `${baseUrl}/reset-password?token=${rawToken}`;
+      try {
+        await sendPasswordResetEmail(user.email, resetUrl);
+      } catch (error) {
+        // No revelamos el fallo al usuario (evita filtrar si el email existe),
+        // pero lo dejamos en los logs del servidor para poder diagnosticarlo.
+        console.error("Error enviando email de recuperación de contraseña", error);
+      }
     }
   }
 
