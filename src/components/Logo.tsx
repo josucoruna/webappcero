@@ -1,34 +1,24 @@
 export function Logo({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 500 220"
+      viewBox="0 0 140 140"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      aria-label="Cero"
+      aria-label="LuaOne"
       className={className}
     >
-      <rect x="0" y="0" width="500" height="220" rx="6" fill="#000000" />
-      <rect
-        x="16"
-        y="16"
-        width="468"
-        height="188"
-        fill="none"
-        stroke="#ffffff"
-        strokeWidth="10"
-      />
-      <text
-        x="250"
-        y="149"
-        textAnchor="middle"
-        fontFamily="Arial, Helvetica, sans-serif"
-        fontWeight="800"
-        fontSize="92"
-        letterSpacing="4"
-        fill="#ffffff"
-      >
-        CERO
-      </text>
+      <rect x="0" y="0" width="140" height="140" rx="32" fill="#0F766E" />
+      <line x1="70" y1="30" x2="34" y2="63" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="70" y1="30" x2="106" y2="63" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="34" y1="63" x2="48" y2="108" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="106" y1="63" x2="92" y2="108" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="48" y1="108" x2="92" y2="108" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="34" y1="63" x2="106" y2="63" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" opacity="0.6" />
+      <circle cx="70" cy="30" r="10" fill="#FFFFFF" />
+      <circle cx="34" cy="63" r="10" fill="#FFFFFF" />
+      <circle cx="106" cy="63" r="10" fill="#FFFFFF" />
+      <circle cx="48" cy="108" r="10" fill="#FFFFFF" />
+      <circle cx="92" cy="108" r="10" fill="#FFFFFF" />
     </svg>
   );
 }

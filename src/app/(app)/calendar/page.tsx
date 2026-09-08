@@ -86,7 +86,7 @@ export default async function CalendarPage({
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-7 gap-2 text-xs">
+      <div className="mt-6 grid grid-cols-7 gap-1 text-xs sm:gap-2">
         {WEEKDAY_LABELS.map((label) => (
           <div
             key={label}

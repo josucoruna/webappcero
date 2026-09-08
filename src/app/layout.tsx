@@ -9,7 +9,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Equipos de trabajo",
+  title: "LuaOne",
   description: "Gestión de equipos de trabajo, servicios y asignaciones",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
