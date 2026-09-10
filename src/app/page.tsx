@@ -77,8 +77,10 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Escritorio: cuatro fotos ocupando todo el ancho, con el titular hacia la parte baja. */}
-        <div className="relative hidden flex-1 overflow-hidden lg:block">
+        {/* Escritorio: cuatro fotos ocupando todo el ancho, con el titular hacia la parte baja.
+         * Altura fija (no flex-1 a pantalla completa): con menos alto que estirar, las dos
+         * fotos horizontales del centro no necesitan ampliarse tanto y se ven nítidas. */}
+        <div className="relative hidden overflow-hidden lg:block lg:h-[480px]">
           <div className="absolute inset-y-0 left-0 w-1/4">
             <Image
               src="/zane-persaud-Mz7yqJGB6Ls-unsplash.jpg"
