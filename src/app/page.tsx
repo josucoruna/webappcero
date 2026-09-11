@@ -128,8 +128,11 @@ export default async function Home() {
         </div>
       </main>
 
-      <footer className="flex flex-col items-center justify-between gap-2 border-t border-line bg-surface px-4 py-6 text-center text-xs text-muted sm:flex-row sm:px-10 sm:text-left sm:text-sm">
+      <footer className="flex flex-col items-center justify-between gap-3 border-t border-line bg-surface px-4 py-6 text-center text-xs text-muted sm:flex-row sm:px-10 sm:text-left sm:text-sm">
         <span className="font-semibold text-[#0F766E]">LuaOne</span>
+        <Link href="/contact" className="hover:text-foreground hover:underline">
+          Contacto
+        </Link>
         <span>© {new Date().getFullYear()} · Turnos y calendarios de equipo</span>
       </footer>
     </div>
