@@ -4,7 +4,12 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-async function send(to: string, subject: string, html: string) {
+async function send(
+  to: string,
+  subject: string,
+  html: string,
+  options?: { replyTo?: string },
+) {
   if (!resend) {
     // Sin API key configurada (ej. en desarrollo local): dejamos el email
     // en los logs del servidor en vez de fallar, para poder probar el flujo.
@@ -13,7 +18,13 @@ async function send(to: string, subject: string, html: string) {
   }
 
   const from = process.env.RESEND_FROM_EMAIL || "LuaOne <onboarding@resend.dev>";
-  await resend.emails.send({ from, to, subject, html });
+  await resend.emails.send({
+    from,
+    to,
+    subject,
+    html,
+    replyTo: options?.replyTo,
+  });
 }
 
 function formatServiceDate(date: Date) {
@@ -65,6 +76,25 @@ export async function sendAssignmentEmail(
       ${formatServiceDate(params.serviceDate)}.</p>
       <p><a href="${params.serviceUrl}">Confirma o rechaza la asignación aquí</a>.</p>
     `,
+  );
+}
+
+/** Reenvía un mensaje del formulario de contacto de la portada. */
+export async function sendContactEmail(params: {
+  name: string;
+  email: string;
+  message: string;
+}) {
+  const name = escapeHtml(params.name);
+  const message = escapeHtml(params.message).replace(/\n/g, "<br>");
+  await send(
+    process.env.CONTACT_EMAIL || "info@luaone.es",
+    `Contacto desde la web: ${params.name}`,
+    `
+      <p><strong>${name}</strong> (${escapeHtml(params.email)}) ha escrito desde el formulario de contacto:</p>
+      <p>${message}</p>
+    `,
+    { replyTo: params.email },
   );
 }
 
