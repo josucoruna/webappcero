@@ -3,15 +3,20 @@
 import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState<boolean | null>(null);
+  // El <html> empieza siempre en modo oscuro (ver layout raíz), así que
+  // asumimos eso también aquí para que el primer render del cliente
+  // coincida con el del servidor. Si alguien había elegido "claro", el
+  // useEffect lo corrige nada más montar: un instante después se ve el
+  // icono correcto, en vez de mostrar el botón vacío mientras tanto.
+  const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
-    // Se lee el tema real justo después de montar (lo decide el script del
-    // <head>) para que el primer render del cliente coincida con el del
-    // servidor y no haya parpadeo ni aviso de hidratación.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsDark(document.documentElement.classList.contains("dark"));
-  }, []);
+    const actual = document.documentElement.classList.contains("dark");
+    if (actual !== isDark) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsDark(actual);
+    }
+  }, [isDark]);
 
   function toggle() {
     const next = !document.documentElement.classList.contains("dark");
@@ -22,13 +27,6 @@ export function ThemeToggle() {
     } catch {
       // el almacenamiento local puede no estar disponible; no pasa nada
     }
-  }
-
-  // Evita mostrar el icono equivocado un instante antes de saber el tema real.
-  if (isDark === null) {
-    return (
-      <div className="fixed top-4 right-4 z-50 h-9 w-9 rounded-full border border-line bg-surface" />
-    );
   }
 
   return (
