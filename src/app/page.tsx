@@ -24,7 +24,7 @@ export default async function Home() {
           width={400}
           height={160}
           priority
-          className="h-20 w-auto shrink-0 sm:h-24"
+          className="h-12 w-auto shrink-0 sm:h-24"
         />
         <div className="flex shrink-0 gap-1 sm:gap-3">
           <Link
