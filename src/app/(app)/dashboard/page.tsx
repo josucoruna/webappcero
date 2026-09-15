@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { requireUser } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
+import { NotificationsToggle } from "@/components/NotificationsToggle";
 import { RespondToAssignmentControls } from "@/components/forms/RespondToAssignmentControls";
 import { Badge } from "@/components/ui/Badge";
 import { Card, cardClassName } from "@/components/ui/Card";
@@ -28,9 +29,12 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold text-foreground">
-        Hola, {user.name}
-      </h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold text-foreground">
+          Hola, {user.name}
+        </h1>
+        <NotificationsToggle />
+      </div>
 
       {user.isSuperAdmin && (
         <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-900/50 dark:bg-amber-500/10 dark:text-amber-300">

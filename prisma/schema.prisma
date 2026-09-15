@@ -47,6 +47,7 @@ model User {
   unavailabilities        Unavailability[]
   incompatibilitiesAsA    Incompatibility[]     @relation("IncompatibilityUserA")
   incompatibilitiesAsB    Incompatibility[]     @relation("IncompatibilityUserB")
+  pushSubscriptions       PushSubscription[]
 
   @@map("users")
 }
@@ -62,6 +63,20 @@ model Unavailability {
   createdAt DateTime @default(now())
 
   @@map("unavailabilities")
+}
+
+// Suscripción de un dispositivo (móvil, navegador) a notificaciones push.
+// Una misma persona puede tener varias (varios dispositivos).
+model PushSubscription {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@map("push_subscriptions")
 }
 
 // Token de un solo uso para restablecer la contraseña por email.

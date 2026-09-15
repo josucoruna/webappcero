@@ -7,6 +7,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { canManageTeam, requireTeamManager, requireUser } from "@/lib/authz";
 import { sendAssignmentEmail, sendDeclineNotificationEmail } from "@/lib/email";
+import { sendPushToUser } from "@/lib/push";
 import { getBaseUrl } from "@/lib/url";
 
 export type ActionState = { error?: string };
@@ -279,7 +280,7 @@ async function notifyPositionAssigned(
     const position = await prisma.position.findUnique({
       where: { id: positionId },
       include: {
-        assignedUser: { select: { email: true } },
+        assignedUser: { select: { id: true, email: true } },
         service: {
           select: { title: true, date: true, team: { select: { name: true } } },
         },
@@ -288,12 +289,18 @@ async function notifyPositionAssigned(
     if (!position?.assignedUser) return;
 
     const baseUrl = await getBaseUrl();
+    const serviceUrl = `${baseUrl}/teams/${teamId}/services/${serviceId}`;
     await sendAssignmentEmail(position.assignedUser.email, {
       positionName: position.name,
       serviceTitle: position.service.title,
       teamName: position.service.team.name,
       serviceDate: position.service.date,
-      serviceUrl: `${baseUrl}/teams/${teamId}/services/${serviceId}`,
+      serviceUrl,
+    });
+    await sendPushToUser(position.assignedUser.id, {
+      title: "Nueva asignación",
+      body: `${position.name} · ${position.service.title} (${position.service.team.name})`,
+      url: serviceUrl,
     });
   } catch (error) {
     console.error("Error enviando email de asignación", error);
@@ -481,13 +488,13 @@ export async function declineAssignment(
   try {
     const leaders = await prisma.teamMembership.findMany({
       where: { teamId: position.service.teamId, role: "LEADER" },
-      select: { user: { select: { email: true } } },
+      select: { user: { select: { id: true, email: true } } },
     });
     if (leaders.length > 0) {
       const baseUrl = await getBaseUrl();
       const serviceUrl = `${baseUrl}/teams/${position.service.teamId}/services/${position.service.id}`;
       await Promise.all(
-        leaders.map((leader) =>
+        leaders.flatMap((leader) => [
           sendDeclineNotificationEmail(leader.user.email, {
             memberName: position.user.name,
             positionName: position.name,
@@ -496,7 +503,12 @@ export async function declineAssignment(
             declineReason,
             serviceUrl,
           }),
-        ),
+          sendPushToUser(leader.user.id, {
+            title: "Asignación rechazada",
+            body: `${position.user.name} ha rechazado ${position.name} · ${position.service.title}`,
+            url: serviceUrl,
+          }),
+        ]),
       );
     }
   } catch (error) {
