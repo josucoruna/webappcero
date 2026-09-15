@@ -54,7 +54,6 @@ export default async function Home() {
               className="object-cover"
               priority
             />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-page" />
           </div>
           <div className="absolute inset-x-0 bottom-0 h-1/2">
             <Image
@@ -65,7 +64,6 @@ export default async function Home() {
               className="object-cover"
               priority
             />
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-t from-transparent to-page" />
           </div>
           <div className="absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-center px-8 text-center">
             <div className="pointer-events-none absolute inset-x-0 top-1/2 h-44 -translate-y-1/2 bg-gradient-to-b from-transparent via-black/55 to-transparent" />
